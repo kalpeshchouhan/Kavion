@@ -10,6 +10,7 @@ Use these ForgeKit skills when available:
 Check:
 - `.gemini/forgekit/sessions/active/`
 - `.gemini/context/current-work.md`
+- `.gemini/forgekit/memory/manifest.json`
 - current git branch and status if available
 
 Return:
@@ -18,6 +19,7 @@ Return:
 - agents used
 - files touched
 - tests or checks run
+- memory index backend and staleness if known
 - blockers
 - next step
 

@@ -18,9 +18,11 @@ Recall rules:
 3. Prefer exact source paths over long pasted content.
 4. If a result matters, read the original source file before relying on it.
 5. Do not load all memory into context.
+6. Use the active local backend reported by the MCP tool. If LanceDB is unavailable, use JSONL/hash-vector fallback.
 
 Final response must include:
 - query
+- active search backend
 - top memory hits with source paths
 - why each hit matters
 - files that should be read next

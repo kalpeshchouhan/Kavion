@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.0 - 2026-04-22
+
+- Added optional local LanceDB memory backend with JSONL/hash-vector fallback.
+- Added automatic memory index refresh requirements to feature, orchestration,
+  bug-fix, memory-update, session-update, and init workflows.
+- Added MCP tools:
+  - `forgekit_compact_memory`
+  - `forgekit_dashboard`
+- Added `/team:dashboard` for memory, session, plan, report, and index status.
+- Strengthened memory compaction guidance for completed sessions and oversized
+  hot memory files.
+- Added MCP setup documentation and backend mode configuration.
+- Bumped extension and MCP server versions to `0.3.0`.
+
 ## 0.2.0 - 2026-04-22
 
 - Added local memory index commands:

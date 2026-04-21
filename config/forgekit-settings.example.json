@@ -2,6 +2,12 @@
   "executionMode": "ask",
   "validationStrictness": "normal",
   "autoArchive": true,
+  "memory": {
+    "autoRefreshIndex": true,
+    "preferredVectorBackend": "auto",
+    "maxChunkChars": 1200,
+    "maxHotMemoryBytes": 12000
+  },
   "maxRetries": 2,
   "maxConcurrentAgents": 2
 }

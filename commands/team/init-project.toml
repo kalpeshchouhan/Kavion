@@ -35,4 +35,5 @@ Rules:
    - Plans: forgekit/templates/project-memory/forgekit/plan.md
    - Reports: forgekit/templates/project-memory/forgekit/report.md
 7. For settings.json, refer to forgekit/config/forgekit-settings.example.json.
+8. After initialization, build the local memory index using MCP tool `forgekit_index_memory` when available. If MCP is not enabled, report `/team:memory-index` as the next command.
 """

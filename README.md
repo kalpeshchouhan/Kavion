@@ -11,7 +11,8 @@ It provides:
   quality gates
 - project-memory and session-state conventions under `.gemini/`
 - local memory index/search commands with token-safe recall limits
-- optional policy and MCP scaffolding for stricter workflow control
+- optional LanceDB-backed local vector search with JSONL fallback
+- optional policy and MCP tooling for stricter workflow control
 
 This repository follows the official Gemini CLI extension shape:
 
@@ -22,7 +23,7 @@ This repository follows the official Gemini CLI extension shape:
 - `policies/` contains workflow guardrails.
 - `skills/` contains workflow playbooks.
 - `templates/` contains project memory templates.
-- `mcp-server/` contains an optional workflow-state MCP server scaffold.
+- `mcp-server/` contains the optional workflow-state MCP server.
 
 ## Status
 
@@ -30,11 +31,13 @@ ForgeKit is usable now as a strong beta:
 
 - extension loading works
 - core memory/session workflow exists
-- orchestration and quality-gate flows work
-- bug-fix flow has been tightened substantially
+- orchestration, bug-fix, and quality-gate flows work
+- memory indexing can refresh automatically through the MCP server
+- dashboard, audit, search, and pruning commands are available
 
-The main remaining risk is end-to-end reliability for long autonomous
-write-heavy bug-fix runs.
+The main remaining risk is Gemini CLI runtime compliance: if the main model
+ignores a workflow instruction, ForgeKit can detect and report the missing
+memory/index update, but it cannot force Gemini CLI to execute every command.
 
 ## Quick Start
 
@@ -60,6 +63,7 @@ Then test:
 /team:fix-issue "Memory workflow is incomplete"
 /team:session-update
 /team:quality-gate
+/team:dashboard
 ```
 
 Validation commands:
@@ -93,12 +97,14 @@ node --check mcp-server/index.js
 - `/team:memory-search`
 - `/team:memory-audit`
 - `/team:memory-compact`
+- `/team:dashboard`
 
 ## Docs
 
 - [QUICKSTART](docs/QUICKSTART.md)
 - [ARCHITECTURE](docs/ARCHITECTURE.md)
 - [MEMORY](docs/MEMORY.md)
+- [MCP](docs/MCP.md)
 - [PUBLISHING](docs/PUBLISHING.md)
 - [ADDING-AGENTS](docs/ADDING-AGENTS.md)
 - [ADDING-SKILLS](docs/ADDING-SKILLS.md)
@@ -123,9 +129,16 @@ ln -sf "$(pwd)/policies/team-guardrails.toml" ~/.gemini/policies/forgekit-team-g
 
 ## Optional MCP Workflow Server
 
-The optional MCP server is scaffolded but not enabled in
-`gemini-extension.json`. Enable it after running `npm install` in
-`mcp-server/`.
+The optional MCP server powers stronger automation:
+
+- session status tools
+- memory index/search/audit tools
+- memory compaction helpers
+- project dashboard
+- optional local LanceDB vector backend
+
+Enable it after running `npm install` in `mcp-server/`. See
+[MCP](docs/MCP.md).
 
 ## Contributing
 

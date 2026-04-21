@@ -1,0 +1,30 @@
+description = "Show a ForgeKit project dashboard for memory, sessions, plans, reports, and next actions."
+
+prompt = """
+Show the ForgeKit project dashboard.
+
+Use MCP tool `forgekit_dashboard` when available. If MCP is not enabled, inspect these project files directly:
+- `.gemini/context/current-work.md`
+- `.gemini/context/`
+- `.gemini/forgekit/sessions/active/`
+- `.gemini/forgekit/plans/`
+- `.gemini/forgekit/reports/`
+- `.gemini/forgekit/memory/manifest.json`
+
+Return:
+- current task or active session
+- current phase and next step
+- memory health
+- active memory index backend
+- stale index sources, if any
+- oversized or missing hot memory files
+- latest plans and reports
+- recommended next command
+
+Rules:
+1. Do not perform implementation work.
+2. Do not load the full memory index into context.
+3. Keep the dashboard short and actionable.
+4. If memory index is missing or stale, recommend `/team:memory-index`.
+5. If hot memory is oversized, recommend `/team:memory-compact`.
+"""

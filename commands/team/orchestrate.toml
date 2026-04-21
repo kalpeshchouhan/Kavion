@@ -34,10 +34,11 @@ Required behavior:
    - `.gemini/context/decisions.md` only for real decisions
    - `.gemini/context/commands.md` or `.gemini/context/testing.md` only if changed
    - active session state under `.gemini/forgekit/sessions/active/`
+11. After memory/session updates, refresh `.gemini/forgekit/memory/` using MCP tool `forgekit_index_memory` when available. If MCP is not enabled, run `/team:memory-index` logic manually. If refresh is blocked, report it as deferred.
    If writes are blocked, include the exact deferred updates in the final response.
 
 Do not call every agent by default.
 Do not edit code before understanding likely impact.
-Do not finish Standard work without a Memory section in the final response.
+Do not finish Standard work without a Memory section in the final response, including memory index refresh status.
 If a normal phase is skipped, briefly explain why.
 """

@@ -64,6 +64,13 @@ ForgeKit distinguishes:
 - task-local session state in `.gemini/forgekit/`
 - local searchable memory cache in `.gemini/forgekit/memory/`
 
+The memory cache supports two local modes:
+
+- LanceDB when the optional `@lancedb/lancedb` package is installed
+- JSONL/hash-vector fallback when native vector dependencies are unavailable
+
+Markdown remains the source of truth; vector data is always rebuildable.
+
 ### Templates
 
 `templates/project-memory/` provides starter files for:
@@ -78,8 +85,8 @@ ForgeKit distinguishes:
 
 ### MCP Server
 
-`mcp-server/` is optional. It provides session-state helpers and local memory
-index/search/audit tools when installed and enabled.
+`mcp-server/` is optional. It provides session-state helpers, local memory
+index/search/audit/compact tools, and a dashboard when installed and enabled.
 
 ## Control Flow
 
@@ -91,7 +98,8 @@ Typical flow:
 4. work is implemented or diagnosed
 5. verification and review run
 6. memory/session state is updated
-7. local memory index is refreshed when useful
+7. local memory index is refreshed
+8. final response reports memory files and index refresh status
 
 ## Current Design Constraint
 

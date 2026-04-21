@@ -10,6 +10,7 @@ Use this checklist before making ForgeKit public.
    - `CONTRIBUTING.md`
    - `docs/ARCHITECTURE.md`
    - `docs/MEMORY.md`
+   - `docs/MCP.md`
 3. Run validation:
 
 ```bash
@@ -29,15 +30,15 @@ git status --short
 Suggested title:
 
 ```text
-Release ForgeKit v0.2.0
+Release ForgeKit v0.3.0
 ```
 
 Suggested summary:
 
 ```text
-- add local memory index/search/audit commands
-- add MCP memory index/search/audit tools
-- document token-safe local memory recall
+- add optional local LanceDB memory backend with JSONL fallback
+- add MCP memory compact/dashboard tools
+- document automatic memory index refresh and MCP setup
 ```
 
 ## GitHub Repo Setup
@@ -71,11 +72,12 @@ git push -u origin main
 
 ## Recommended First Release State
 
-Publish as a beta or `v0.2.0` style release, not as a fully stable
+Publish as a beta or `v0.3.0` style release, not as a fully stable
 automation platform.
 
 Current honest positioning:
 
 - ready to use
 - strong beta
-- not yet fully battle-tested for long autonomous bug-fix runs
+- local memory and dashboard tooling are in place
+- not yet fully battle-tested for long autonomous write-heavy runs across many projects

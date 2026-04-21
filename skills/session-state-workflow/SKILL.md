@@ -46,6 +46,7 @@ Each active session should record:
 5. Store review or QA reports in `.gemini/forgekit/reports/`.
 6. Archive completed sessions instead of deleting them.
 7. If the runtime is read-only or approval for writes is unavailable, continue the task and report session-state updates as deferred instead of blocking progress.
+8. After session updates, refresh `.gemini/forgekit/memory/` using `forgekit_index_memory` when MCP is available, or report index refresh as deferred.
 
 ## Output
 
@@ -56,3 +57,4 @@ Return:
 - Status
 - Next step
 - Files updated
+- Memory index refresh status

@@ -10,6 +10,19 @@ const root = path.join(workspacePath, '.gemini', 'forgekit');
 const geminiRoot = path.join(workspacePath, '.gemini');
 const memoryRoot = path.join(root, 'memory');
 const vectorSize = 128;
+const serverVersion = '0.3.0';
+const defaultVectorBackend = ['auto', 'jsonl', 'lancedb'].includes(process.env.FORGEKIT_VECTOR_BACKEND)
+  ? process.env.FORGEKIT_VECTOR_BACKEND
+  : 'auto';
+const hotMemoryFiles = [
+  '.gemini/context/project-brief.md',
+  '.gemini/context/architecture.md',
+  '.gemini/context/commands.md',
+  '.gemini/context/testing.md',
+  '.gemini/context/current-work.md',
+  '.gemini/context/decisions.md',
+  '.gemini/context/github.md',
+];
 
 async function ensureDirs() {
   await fs.mkdir(path.join(root, 'sessions', 'active'), { recursive: true });
@@ -134,12 +147,100 @@ async function readJsonl(file) {
   }
 }
 
-async function buildMemoryIndex({ max_chunk_chars = 1200 } = {}) {
+async function readJson(file, fallback = null) {
+  try {
+    return JSON.parse(await fs.readFile(file, 'utf8'));
+  } catch {
+    return fallback;
+  }
+}
+
+function normalizeBackend(value) {
+  if (['auto', 'jsonl', 'lancedb'].includes(value)) return value;
+  return 'auto';
+}
+
+async function tryLoadLanceDb() {
+  try {
+    return await import('@lancedb/lancedb');
+  } catch (error) {
+    return { error };
+  }
+}
+
+async function writeLanceDbIndex(chunks, vectors) {
+  if (!chunks.length) {
+    return {
+      enabled: false,
+      backend: 'lancedb',
+      reason: 'No memory chunks to index.',
+    };
+  }
+
+  const lancedb = await tryLoadLanceDb();
+  if (lancedb.error) {
+    return {
+      enabled: false,
+      backend: 'lancedb',
+      reason: '@lancedb/lancedb is not installed. Run npm install in mcp-server or use FORGEKIT_VECTOR_BACKEND=jsonl.',
+    };
+  }
+
+  const lanceRoot = path.join(memoryRoot, 'lancedb');
+  const tableName = 'memory_chunks';
+  const vectorMap = new Map(vectors.map((item) => [item.id, item.vector]));
+  const rows = chunks.map((record) => ({
+    id: record.id,
+    vector: vectorMap.get(record.id) || embed(`${record.source_path}\n${record.content}`),
+    source_path: record.source_path,
+    chunk_index: record.chunk_index,
+    chunk_type: record.chunk_type,
+    source_hash: record.source_hash,
+    updated_at: record.updated_at,
+    tags_json: JSON.stringify(record.tags || []),
+    content: record.content,
+  }));
+
+  try {
+    await fs.mkdir(lanceRoot, { recursive: true });
+    const db = await lancedb.connect(lanceRoot);
+    let table;
+    try {
+      table = await db.createTable(tableName, rows, { mode: 'overwrite' });
+    } catch (error) {
+      if (typeof db.dropTable === 'function') {
+        try {
+          await db.dropTable(tableName);
+        } catch {
+          // The table may not exist. Creation below will report any real failure.
+        }
+      }
+      table = await db.createTable(tableName, rows);
+    }
+    return {
+      enabled: true,
+      backend: 'lancedb',
+      path: lanceRoot,
+      table: tableName,
+      rows: rows.length,
+      api: typeof table.vectorSearch === 'function' ? 'vectorSearch' : 'search',
+    };
+  } catch (error) {
+    return {
+      enabled: false,
+      backend: 'lancedb',
+      reason: error.message,
+    };
+  }
+}
+
+async function buildMemoryIndex({ max_chunk_chars = 1200, vector_backend = defaultVectorBackend } = {}) {
   await ensureDirs();
   const files = await collectMemoryFiles();
   const chunks = [];
   const vectors = [];
   const now = new Date().toISOString();
+  const requestedBackend = normalizeBackend(vector_backend);
 
   for (const file of files) {
     const content = await fs.readFile(file, 'utf8');
@@ -173,12 +274,22 @@ async function buildMemoryIndex({ max_chunk_chars = 1200 } = {}) {
     vectors.map((record) => JSON.stringify(record)).join('\n') + (vectors.length ? '\n' : ''),
     'utf8',
   );
+
+  const lanceResult =
+    requestedBackend === 'lancedb' || requestedBackend === 'auto'
+      ? await writeLanceDbIndex(chunks, vectors)
+      : { enabled: false, backend: 'lancedb', reason: 'LanceDB disabled by backend setting.' };
+  const activeBackend = lanceResult.enabled ? 'lancedb' : 'local-jsonl-hash-vector';
+
   await fs.writeFile(
     path.join(memoryRoot, 'manifest.json'),
     JSON.stringify(
       {
-        version: 1,
-        backend: 'local-jsonl-hash-vector',
+        version: 2,
+        backend: activeBackend,
+        requested_backend: requestedBackend,
+        fallback_backend: 'local-jsonl-hash-vector',
+        vector_backend: lanceResult,
         workspace: workspacePath,
         indexed_at: now,
         files: files.length,
@@ -192,10 +303,66 @@ async function buildMemoryIndex({ max_chunk_chars = 1200 } = {}) {
     'utf8',
   );
 
-  return { files: files.length, chunks: chunks.length, root: memoryRoot };
+  return {
+    files: files.length,
+    chunks: chunks.length,
+    root: memoryRoot,
+    backend: activeBackend,
+    requested_backend: requestedBackend,
+    vector_backend: lanceResult,
+  };
 }
 
-async function searchMemory({ query, top_k = 5, max_total_chars = 5000 }) {
+function formatSearchRecord(record, score, usedChars, maxTotalChars) {
+  const remaining = Math.max(0, maxTotalChars - usedChars.value);
+  const excerpt = String(record.content || '').slice(0, Math.min(remaining, 800));
+  usedChars.value += excerpt.length;
+  return {
+    id: record.id,
+    source_path: record.source_path,
+    chunk_type: record.chunk_type,
+    score,
+    exact_score: record.exact,
+    semantic_score: record.semantic,
+    excerpt,
+  };
+}
+
+async function searchLanceMemory({ query, top_k, max_total_chars }) {
+  const manifest = await readJson(path.join(memoryRoot, 'manifest.json'));
+  if (manifest?.backend !== 'lancedb') return null;
+
+  const lancedb = await tryLoadLanceDb();
+  if (lancedb.error) return null;
+
+  try {
+    const db = await lancedb.connect(path.join(memoryRoot, 'lancedb'));
+    const table = await db.openTable('memory_chunks');
+    const search = typeof table.vectorSearch === 'function' ? table.vectorSearch.bind(table) : table.search.bind(table);
+    const rows = await search(embed(query)).limit(top_k).toArray();
+    const usedChars = { value: 0 };
+    return rows.map((row) => {
+      const score = typeof row._distance === 'number' ? Number((1 / (1 + row._distance)).toFixed(4)) : 1;
+      return formatSearchRecord(
+        {
+          id: row.id,
+          source_path: row.source_path,
+          chunk_type: row.chunk_type,
+          content: row.content,
+          exact: 0,
+          semantic: score,
+        },
+        score,
+        usedChars,
+        max_total_chars,
+      );
+    });
+  } catch {
+    return null;
+  }
+}
+
+async function searchJsonlMemory({ query, top_k = 5, max_total_chars = 5000 }) {
   await ensureDirs();
   const memoryFile = path.join(memoryRoot, 'memory.jsonl');
   const vectorFile = path.join(memoryRoot, 'vectors.jsonl');
@@ -210,7 +377,7 @@ async function searchMemory({ query, top_k = 5, max_total_chars = 5000 }) {
   const vectorMap = new Map(vectors.map((item) => [item.id, item.vector]));
   const queryTokens = tokenize(query);
   const queryVector = embed(query);
-  let usedChars = 0;
+  const usedChars = { value: 0 };
 
   return records
     .map((record) => {
@@ -222,33 +389,21 @@ async function searchMemory({ query, top_k = 5, max_total_chars = 5000 }) {
     .filter((record) => record.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, top_k)
-    .map((record) => {
-      const remaining = Math.max(0, max_total_chars - usedChars);
-      const excerpt = record.content.slice(0, Math.min(remaining, 800));
-      usedChars += excerpt.length;
-      return {
-        id: record.id,
-        source_path: record.source_path,
-        chunk_type: record.chunk_type,
-        score: record.score,
-        exact_score: record.exact,
-        semantic_score: record.semantic,
-        excerpt,
-      };
-    });
+    .map((record) => formatSearchRecord(record, record.score, usedChars, max_total_chars));
+}
+
+async function searchMemory({ query, top_k = 5, max_total_chars = 5000 }) {
+  await ensureDirs();
+  const lanceResults = await searchLanceMemory({ query, top_k, max_total_chars });
+  if (lanceResults?.length) {
+    return { backend: 'lancedb', results: lanceResults };
+  }
+  return { backend: 'local-jsonl-hash-vector', results: await searchJsonlMemory({ query, top_k, max_total_chars }) };
 }
 
 async function auditMemory() {
   await ensureDirs();
-  const required = [
-    '.gemini/context/project-brief.md',
-    '.gemini/context/architecture.md',
-    '.gemini/context/commands.md',
-    '.gemini/context/testing.md',
-    '.gemini/context/current-work.md',
-    '.gemini/context/decisions.md',
-    '.gemini/context/github.md',
-  ];
+  const required = hotMemoryFiles;
   const missing = [];
   const oversized = [];
   for (const relativePath of required) {
@@ -260,22 +415,157 @@ async function auditMemory() {
       missing.push(relativePath);
     }
   }
-  let manifestExists = true;
-  try {
-    await fs.stat(path.join(memoryRoot, 'manifest.json'));
-  } catch {
-    manifestExists = false;
-  }
+  const manifest = await readJson(path.join(memoryRoot, 'manifest.json'));
+  const manifestExists = Boolean(manifest);
+  const staleIndex = manifest?.indexed_at
+    ? filesChangedAfter(new Date(manifest.indexed_at))
+    : Promise.resolve([]);
+  const changedAfterIndex = await staleIndex;
   return {
-    decision: missing.length ? 'block' : oversized.length || !manifestExists ? 'pass-with-risk' : 'pass',
+    decision: missing.length ? 'block' : oversized.length || !manifestExists || changedAfterIndex.length ? 'pass-with-risk' : 'pass',
     missing,
     oversized,
     index_present: manifestExists,
+    index_backend: manifest?.backend || null,
+    index_stale_sources: changedAfterIndex.slice(0, 20),
     recommendations: [
       ...(missing.length ? ['Run /team:init-project to create missing hot memory files.'] : []),
       ...(oversized.length ? ['Run /team:memory-compact to keep hot memory small.'] : []),
       ...(!manifestExists ? ['Run /team:memory-index to create the local memory index.'] : []),
+      ...(changedAfterIndex.length ? ['Run /team:memory-index to refresh stale memory recall cache.'] : []),
     ],
+  };
+}
+
+async function filesChangedAfter(date) {
+  const files = await collectMemoryFiles();
+  const changed = [];
+  for (const file of files) {
+    const stat = await fs.stat(file);
+    if (stat.mtime > date) changed.push(path.relative(workspacePath, file));
+  }
+  return changed;
+}
+
+async function readActiveSessions() {
+  await ensureDirs();
+  const dir = path.join(root, 'sessions', 'active');
+  const names = await fs.readdir(dir).catch(() => []);
+  const sessions = [];
+  for (const name of names.filter((file) => file.endsWith('.md')).sort()) {
+    const file = path.join(dir, name);
+    const content = await fs.readFile(file, 'utf8');
+    const get = (label) => content.match(new RegExp(`^${label}:\\s*(.*)$`, 'im'))?.[1]?.trim() || '';
+    sessions.push({
+      session_id: name.replace(/\.md$/, ''),
+      file: path.relative(workspacePath, file),
+      task: get('Task'),
+      status: get('Status') || 'unknown',
+      phase: get('Current phase') || 'unknown',
+      next_step: get('Next step'),
+      last_updated: get('Last updated'),
+      content,
+    });
+  }
+  return sessions;
+}
+
+async function compactMemory({ dry_run = true, max_hot_bytes = 12000, archive_completed_sessions = true } = {}) {
+  await ensureDirs();
+  const actions = [];
+  const recommendations = [];
+  const oversized_hot_memory = [];
+
+  for (const relativePath of hotMemoryFiles) {
+    try {
+      const stat = await fs.stat(path.join(workspacePath, relativePath));
+      if (stat.size > max_hot_bytes) {
+        oversized_hot_memory.push({ file: relativePath, bytes: stat.size });
+      }
+    } catch {
+      // Missing files are handled by auditMemory.
+    }
+  }
+
+  const sessions = await readActiveSessions();
+  const completed = sessions.filter((session) => /^(complete|completed|done)$/i.test(session.status));
+  if (archive_completed_sessions && completed.length) {
+    for (const session of completed) {
+      const src = path.join(workspacePath, session.file);
+      let dest = path.join(root, 'sessions', 'archive', path.basename(session.file));
+      try {
+        await fs.stat(dest);
+        dest = path.join(root, 'sessions', 'archive', `${session.session_id}-${Date.now()}.md`);
+      } catch {
+        // Destination is free.
+      }
+      actions.push({
+        action: dry_run ? 'would_archive_completed_session' : 'archived_completed_session',
+        session_id: session.session_id,
+        from: session.file,
+        to: path.relative(workspacePath, dest),
+      });
+      if (!dry_run) await fs.rename(src, dest);
+    }
+  }
+
+  if (oversized_hot_memory.length) {
+    recommendations.push('Move detailed history from oversized hot memory into .gemini/notes/ or .gemini/archive/.');
+  }
+  if (!actions.length && !oversized_hot_memory.length) {
+    recommendations.push('No pruning action needed.');
+  }
+
+  let refreshed_index = null;
+  if (!dry_run && actions.length) {
+    refreshed_index = await buildMemoryIndex();
+  }
+
+  return {
+    dry_run,
+    actions,
+    oversized_hot_memory,
+    refreshed_index,
+    recommendations,
+  };
+}
+
+async function latestFiles(dir, limit = 5) {
+  const names = await fs.readdir(dir).catch(() => []);
+  const files = [];
+  for (const name of names.filter((item) => item.endsWith('.md'))) {
+    const file = path.join(dir, name);
+    const stat = await fs.stat(file);
+    files.push({ file: path.relative(workspacePath, file), updated_at: stat.mtime.toISOString(), bytes: stat.size });
+  }
+  return files.sort((a, b) => b.updated_at.localeCompare(a.updated_at)).slice(0, limit);
+}
+
+async function dashboard() {
+  await ensureDirs();
+  const manifest = await readJson(path.join(memoryRoot, 'manifest.json'));
+  const audit = await auditMemory();
+  const activeSessions = (await readActiveSessions()).map(({ content, ...session }) => session);
+  const currentWorkPath = path.join(geminiRoot, 'context', 'current-work.md');
+  const currentWork = await fs.readFile(currentWorkPath, 'utf8').catch(() => '');
+
+  return {
+    workspace: workspacePath,
+    memory: {
+      decision: audit.decision,
+      index_present: audit.index_present,
+      index_backend: audit.index_backend,
+      indexed_at: manifest?.indexed_at || null,
+      chunks: manifest?.chunks || 0,
+      stale_sources: audit.index_stale_sources,
+      oversized_hot_memory: audit.oversized,
+      missing_hot_memory: audit.missing,
+    },
+    current_work_excerpt: currentWork.slice(0, 1200),
+    active_sessions: activeSessions,
+    latest_reports: await latestFiles(path.join(root, 'reports')),
+    latest_plans: await latestFiles(path.join(root, 'plans')),
+    recommended_actions: audit.recommendations,
   };
 }
 
@@ -292,7 +582,7 @@ function text(data) {
 
 const server = new McpServer({
   name: 'forgekit-workflow',
-  version: '0.2.0',
+  version: serverVersion,
 });
 
 server.registerTool(
@@ -382,10 +672,11 @@ server.registerTool(
     inputSchema: z
       .object({
         max_chunk_chars: z.number().int().min(300).max(2400).default(1200),
+        vector_backend: z.enum(['auto', 'jsonl', 'lancedb']).default(defaultVectorBackend),
       })
       .shape,
   },
-  async ({ max_chunk_chars }) => text(await buildMemoryIndex({ max_chunk_chars })),
+  async ({ max_chunk_chars, vector_backend }) => text(await buildMemoryIndex({ max_chunk_chars, vector_backend })),
 );
 
 server.registerTool(
@@ -400,11 +691,15 @@ server.registerTool(
       })
       .shape,
   },
-  async ({ query, top_k, max_total_chars }) => text({
-    query,
-    results: await searchMemory({ query, top_k, max_total_chars }),
-    rule: 'Read original source files before relying on recalled memory.',
-  }),
+  async ({ query, top_k, max_total_chars }) => {
+    const recall = await searchMemory({ query, top_k, max_total_chars });
+    return text({
+      query,
+      backend: recall.backend,
+      results: recall.results,
+      rule: 'Read original source files before relying on recalled memory.',
+    });
+  },
 );
 
 server.registerTool(
@@ -414,6 +709,31 @@ server.registerTool(
     inputSchema: z.object({}).shape,
   },
   async () => text(await auditMemory()),
+);
+
+server.registerTool(
+  'forgekit_compact_memory',
+  {
+    description: 'Prune ForgeKit memory safely by archiving completed sessions and reporting oversized hot memory files.',
+    inputSchema: z
+      .object({
+        dry_run: z.boolean().default(true),
+        max_hot_bytes: z.number().int().min(4000).max(40000).default(12000),
+        archive_completed_sessions: z.boolean().default(true),
+      })
+      .shape,
+  },
+  async ({ dry_run, max_hot_bytes, archive_completed_sessions }) =>
+    text(await compactMemory({ dry_run, max_hot_bytes, archive_completed_sessions })),
+);
+
+server.registerTool(
+  'forgekit_dashboard',
+  {
+    description: 'Return a compact ForgeKit project dashboard with memory, session, plan, report, and recommended action status.',
+    inputSchema: z.object({}).shape,
+  },
+  async () => text(await dashboard()),
 );
 
 const transport = new StdioServerTransport();

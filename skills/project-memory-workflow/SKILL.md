@@ -11,6 +11,7 @@ Use this skill to maintain long-term project memory without wasting context.
 - Hot memory: loaded by project `GEMINI.md`.
 - Warm notes: read only when relevant. Located in `.gemini/notes/`.
 - Cold archive: old tasks and decisions. Located in `.gemini/archive/`.
+- Local index: rebuildable search cache. Located in `.gemini/forgekit/memory/`.
 
 ## Hot memory files
 
@@ -34,6 +35,7 @@ Use:
 6. **Maintenance:** Every few tasks, move stale `current-work.md` entries to `decisions.md` or archive them.
 7. **Prune:** Move large or old files from `context/` or `notes/` to `archive/` to keep hot context small.
 8. **Sanitize:** Ensure no secrets or PII are stored in memory files.
+9. **Refresh:** After any memory or session-state change, rebuild the local index with `forgekit_index_memory` when MCP is available. If MCP is unavailable, update the index files manually or report the refresh as deferred.
 
 ## Promotion Rules
 
@@ -41,3 +43,11 @@ Use:
 - Promote to `decisions.md`: Finalized technical choices and rationale.
 - Promote to `architecture.md`: Updated system diagrams or flow descriptions.
 - Promote to `testing.md`: New test patterns or verification requirements.
+
+## Local Index Rules
+
+- Markdown memory is the source of truth.
+- `.gemini/forgekit/memory/` is a cache and can be rebuilt.
+- Prefer LanceDB when the MCP server reports it is active.
+- Fall back to JSONL/hash-vector recall without blocking workflow.
+- Search results are hints; read the original source file before relying on a recalled chunk.

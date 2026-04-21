@@ -18,9 +18,11 @@ Required:
 5. Archive stale current-work notes if needed.
 6. Keep hot memory concise.
 7. Do not store full chat history.
+8. Refresh `.gemini/forgekit/memory/` after updates using MCP tool `forgekit_index_memory` when available. If MCP is not enabled, update the local index files manually or report index refresh as deferred.
 
 Final response must include:
 - Memory files updated
 - Memory files intentionally unchanged
+- Memory index refresh status
 - Deferred updates, if writes were blocked
 """

@@ -1,6 +1,6 @@
 # ForgeKit MCP Server
 
-This is an optional lightweight MCP workflow server scaffold.
+This is an optional MCP workflow server for ForgeKit.
 
 It is not enabled in `gemini-extension.json` yet, so ForgeKit can load without
 Node dependencies. Enable it after installing dependencies.
@@ -10,7 +10,12 @@ Node dependencies. Enable it after installing dependencies.
 ```bash
 cd mcp-server
 npm install
+npm run check
 ```
+
+`npm install` also installs optional LanceDB support when the platform supports
+the native package. ForgeKit falls back to JSONL/hash-vector recall if LanceDB
+is not installed.
 
 ## Enable
 
@@ -24,7 +29,8 @@ Add this to `gemini-extension.json`:
       "args": ["${extensionPath}${/}mcp-server${/}index.js"],
       "cwd": "${extensionPath}${/}mcp-server",
       "env": {
-        "FORGEKIT_WORKSPACE_PATH": "${workspacePath}"
+        "FORGEKIT_WORKSPACE_PATH": "${workspacePath}",
+        "FORGEKIT_VECTOR_BACKEND": "auto"
       }
     }
   }
@@ -42,6 +48,8 @@ Restart Gemini CLI after enabling.
 - `forgekit_index_memory`
 - `forgekit_search_memory`
 - `forgekit_audit_memory`
+- `forgekit_compact_memory`
+- `forgekit_dashboard`
 
 ## Local Memory Index
 
@@ -52,15 +60,16 @@ The memory tools build and search a local cache under:
   manifest.json
   memory.jsonl
   vectors.jsonl
+  lancedb/
 ```
 
 Markdown files remain the source of truth. The index is used only for bounded
 recall and search.
 
-The current backend is dependency-light:
+The backend mode defaults to `auto`:
 
-- JSONL chunk metadata
-- exact token matching
-- local hash-vector similarity
+- use local LanceDB when `@lancedb/lancedb` is installed
+- otherwise use JSONL chunk metadata, exact token matching, and local hash-vector similarity
 
-Future versions may add `sqlite-vec` or another local vector backend.
+Set `FORGEKIT_VECTOR_BACKEND=jsonl` to force the dependency-light backend.
+Set `FORGEKIT_VECTOR_BACKEND=lancedb` to require LanceDB when installed.

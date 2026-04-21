@@ -20,6 +20,7 @@ Required:
 5. If review or QA output exists, keep it under `.gemini/forgekit/reports/`.
 6. Keep session state concise.
 7. If writes are not permitted, report the deferred updates instead of blocking progress.
+8. Refresh `.gemini/forgekit/memory/` after session updates using MCP tool `forgekit_index_memory` when available. If MCP is not enabled, update the local index files manually or report index refresh as deferred.
 
 Do not rewrite unrelated memory files.
 Do not archive an active session unless the task is complete or explicitly paused.
@@ -28,5 +29,6 @@ Final response must include:
 - Session file updated
 - Current phase
 - Next step
+- Memory index refresh status
 - Deferred update payload, if writes were blocked
 """
