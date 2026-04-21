@@ -50,6 +50,10 @@ Restart Gemini CLI after enabling.
 - `forgekit_audit_memory`
 - `forgekit_compact_memory`
 - `forgekit_dashboard`
+- `forgekit_check_workflow`
+- `forgekit_record_checkpoint`
+- `forgekit_handoff_report`
+- `forgekit_release_readiness`
 
 ## Local Memory Index
 

@@ -18,6 +18,8 @@ Check:
 - Code review found no blocking issues.
 - Docs or project memory were updated when needed.
 - GitHub branch, issue, and PR state are clear.
+- Workflow checkpoint passes.
+- Release readiness is not claimed when QA is deferred.
 
 ## Decisions
 
@@ -26,6 +28,10 @@ Return one of:
 - `pass`: ready to finalize.
 - `pass-with-risk`: acceptable but call out residual risk.
 - `block`: must fix before finalizing.
+
+Return `block` when QA is deferred, code review is missing, sensitive work lacks
+security review, unresolved blockers remain, or memory/index state is stale and
+needed for handoff.
 
 ## Output
 

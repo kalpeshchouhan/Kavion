@@ -29,9 +29,10 @@ For non-trivial coding work:
 10. Use `github-workflow-manager` for GitHub issues, branches, PRs, review comments, and CI status.
 11. Before final response, update project memory and session state when writes are permitted. If writes are blocked, include the exact deferred memory/session update in the final response.
 12. After updating memory or session state, refresh `.gemini/forgekit/memory/` using `forgekit_index_memory` when MCP is available, or `/team:memory-index`/manual index files when it is not. If refresh is blocked, report it as deferred.
+13. Run a workflow checkpoint before handoff. Do not call work release-ready when QA is deferred, review is missing, security review is missing for sensitive work, blockers remain, or memory index is stale.
 
 Do not treat memory as optional for non-trivial work.
-Final responses for non-trivial work must include a "Memory" section showing updated, unchanged, deferred memory files, and memory index refresh status.
+Final responses for non-trivial work must include a "Memory" section showing updated, unchanged, deferred memory files, memory index refresh status, and checkpoint decision.
 
 ## Preferred Commands
 
@@ -47,6 +48,10 @@ Final responses for non-trivial work must include a "Memory" section showing upd
 - `/team:resume`
 - `/team:archive`
 - `/team:quality-gate`
+- `/team:checkpoint`
+- `/team:workflow-audit`
+- `/team:handoff`
+- `/team:release-readiness`
 - `/team:security-audit`
 - `/team:perf-check`
 - `/team:a11y-audit`

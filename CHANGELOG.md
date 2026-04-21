@@ -2,8 +2,26 @@
 
 ## Unreleased
 
-- Added README banner and workflow diagram SVG assets for a more polished
+- No unreleased changes yet.
+
+## 0.4.0 - 2026-04-22
+
+- Added workflow enforcement commands:
+  - `/team:checkpoint`
+  - `/team:workflow-audit`
+  - `/team:handoff`
+  - `/team:release-readiness`
+- Added MCP workflow enforcement tools:
+  - `forgekit_check_workflow`
+  - `forgekit_record_checkpoint`
+  - `forgekit_handoff_report`
+  - `forgekit_release_readiness`
+- Updated feature, orchestration, bug-fix, quality-gate, and archive workflows
+  to require checkpoint/release-readiness decisions.
+- Added workflow enforcement documentation.
+- Added README and memory-system diagram SVG assets for a more polished
   open-source project presentation.
+- Bumped extension and MCP server versions to `0.4.0`.
 
 ## 0.3.0 - 2026-04-22
 

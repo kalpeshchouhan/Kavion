@@ -10,7 +10,7 @@ const root = path.join(workspacePath, '.gemini', 'forgekit');
 const geminiRoot = path.join(workspacePath, '.gemini');
 const memoryRoot = path.join(root, 'memory');
 const vectorSize = 128;
-const serverVersion = '0.3.0';
+const serverVersion = '0.4.0';
 const defaultVectorBackend = ['auto', 'jsonl', 'lancedb'].includes(process.env.FORGEKIT_VECTOR_BACKEND)
   ? process.env.FORGEKIT_VECTOR_BACKEND
   : 'auto';
@@ -470,6 +470,289 @@ async function readActiveSessions() {
   return sessions;
 }
 
+async function findSession(sessionId) {
+  const sessions = await readActiveSessions();
+  if (sessionId) {
+    return sessions.find((session) => session.session_id === sessionId) || null;
+  }
+  return sessions.sort((a, b) => String(b.last_updated).localeCompare(String(a.last_updated)))[0] || null;
+}
+
+function fieldValue(content, label) {
+  return content.match(new RegExp(`^${label}:\\s*(.*)$`, 'im'))?.[1]?.trim() || '';
+}
+
+function hasMeaningfulValue(value) {
+  return Boolean(value && !/^(none|n\/a|na|pending|todo|tbd|unknown|-)?$/i.test(value.trim()));
+}
+
+function isClearBlockerValue(value) {
+  return !hasMeaningfulValue(value) || /^(none|no blockers?|resolved|clear)\.?$/i.test(value.trim());
+}
+
+function includesAny(value, words) {
+  const haystack = String(value || '').toLowerCase();
+  return words.some((word) => haystack.includes(word));
+}
+
+function gate(id, label, status, evidence = '', next = '') {
+  return { id, label, status, evidence, next };
+}
+
+function decisionFromGates(gates) {
+  if (gates.some((item) => item.status === 'block')) return 'block';
+  if (gates.some((item) => item.status === 'risk')) return 'pass-with-risk';
+  return 'pass';
+}
+
+async function readReportEvidence() {
+  const reportDir = path.join(root, 'reports');
+  const names = await fs.readdir(reportDir).catch(() => []);
+  const reports = [];
+  for (const name of names.filter((item) => item.endsWith('.md')).sort()) {
+    const file = path.join(reportDir, name);
+    const content = await fs.readFile(file, 'utf8').catch(() => '');
+    reports.push({
+      file: path.relative(workspacePath, file),
+      name,
+      content,
+    });
+  }
+  return reports;
+}
+
+function reportMentions(reports, words) {
+  return reports.some((report) => includesAny(`${report.name}\n${report.content}`, words));
+}
+
+async function checkWorkflow({
+  session_id,
+  require_tests = true,
+  require_review = true,
+  require_memory_index = true,
+  require_security_when_sensitive = true,
+  release_mode = false,
+} = {}) {
+  await ensureDirs();
+  const session = await findSession(session_id);
+  const audit = await auditMemory();
+  const reports = await readReportEvidence();
+  const gates = [];
+
+  gates.push(
+    gate(
+      'memory.initialized',
+      'Project memory initialized',
+      audit.missing.length ? 'block' : 'pass',
+      audit.missing.length ? `Missing: ${audit.missing.join(', ')}` : 'All hot memory files exist.',
+      audit.missing.length ? 'Run /team:init-project.' : '',
+    ),
+  );
+
+  gates.push(
+    gate(
+      'session.active',
+      'Active session exists',
+      session ? 'pass' : 'block',
+      session ? `Using ${session.file}.` : 'No active session found.',
+      session ? '' : 'Run /team:session-update or restart with /team:feature.',
+    ),
+  );
+
+  if (!session) {
+    gates.push(
+      gate(
+        'memory.index',
+        'Memory index current',
+        audit.index_present && !audit.index_stale_sources.length ? 'pass' : 'risk',
+        audit.index_present ? `Backend: ${audit.index_backend || 'unknown'}.` : 'Index missing.',
+        audit.index_present && !audit.index_stale_sources.length ? '' : 'Run /team:memory-index.',
+      ),
+    );
+    return {
+      decision: decisionFromGates(gates),
+      session: null,
+      gates,
+      recommendations: gates.filter((item) => item.next).map((item) => item.next),
+    };
+  }
+
+  const verification = fieldValue(session.content, 'Verification');
+  const blockers = fieldValue(session.content, 'Blockers');
+  const agents = fieldValue(session.content, 'Agents used');
+  const phase = fieldValue(session.content, 'Current phase');
+  const status = fieldValue(session.content, 'Status');
+  const sessionText = session.content;
+  const qaDeferred = includesAny(`${verification}\n${sessionText}`, ['qa deferred', 'verification deferred', 'tests deferred']);
+  const testsPassed = includesAny(`${verification}\n${sessionText}\n${reports.map((report) => report.content).join('\n')}`, [
+    'test passed',
+    'tests passed',
+    'npm test passed',
+    'all tests pass',
+    'e2e passed',
+    'verified',
+  ]);
+  const hasReview = includesAny(`${agents}\n${sessionText}`, ['code-reviewer', 'code review', 'review complete']) ||
+    reportMentions(reports, ['code review', 'reviewer', 'blocking issues']);
+  const sensitive = includesAny(`${session.task}\n${sessionText}`, [
+    'auth',
+    'jwt',
+    'password',
+    'payment',
+    'stripe',
+    'razorpay',
+    'permission',
+    'security',
+    'secret',
+    'token',
+    'user data',
+  ]);
+  const hasSecurity = includesAny(`${agents}\n${sessionText}`, ['security-engineer', 'security review']) ||
+    reportMentions(reports, ['security review', 'security-engineer']);
+
+  gates.push(
+    gate(
+      'session.updated',
+      'Session state updated',
+      hasMeaningfulValue(session.last_updated) ? 'pass' : 'risk',
+      hasMeaningfulValue(session.last_updated) ? `Last updated: ${session.last_updated}.` : 'Last updated is missing.',
+      hasMeaningfulValue(session.last_updated) ? '' : 'Run /team:session-update.',
+    ),
+  );
+  gates.push(
+    gate(
+      'workflow.phase',
+      'Workflow phase is explicit',
+      hasMeaningfulValue(phase) && hasMeaningfulValue(status) ? 'pass' : 'risk',
+      `Phase: ${phase || 'missing'}, status: ${status || 'missing'}.`,
+      hasMeaningfulValue(phase) && hasMeaningfulValue(status) ? '' : 'Update active session phase/status.',
+    ),
+  );
+  gates.push(
+    gate(
+      'blockers.clear',
+      'No unresolved blockers',
+      isClearBlockerValue(blockers) ? 'pass' : 'block',
+      hasMeaningfulValue(blockers) ? `Blockers: ${blockers}.` : 'No blockers recorded.',
+      isClearBlockerValue(blockers) ? '' : 'Resolve or explicitly defer the blocker.',
+    ),
+  );
+
+  if (require_tests) {
+    let testStatus = 'block';
+    let evidence = 'No completed verification evidence found.';
+    let next = 'Run /team:debug for failing tests or /team:quality-gate after tests pass.';
+    if (testsPassed) {
+      testStatus = 'pass';
+      evidence = 'Verification evidence indicates tests/checks passed.';
+      next = '';
+    } else if (qaDeferred) {
+      testStatus = release_mode ? 'block' : 'risk';
+      evidence = 'QA or verification is explicitly deferred.';
+      next = 'Do not mark release-ready. Run /team:debug to fix deferred QA.';
+    }
+    gates.push(gate('verification.tests', 'Tests or verification completed', testStatus, evidence, next));
+  }
+
+  if (require_review) {
+    gates.push(
+      gate(
+        'review.code',
+        'Code review completed',
+        hasReview ? 'pass' : 'block',
+        hasReview ? 'Review evidence found.' : 'No code review evidence found.',
+        hasReview ? '' : 'Run /team:review or include code-reviewer before handoff.',
+      ),
+    );
+  }
+
+  if (require_security_when_sensitive && sensitive) {
+    gates.push(
+      gate(
+        'review.security',
+        'Security review completed for sensitive work',
+        hasSecurity ? 'pass' : 'block',
+        hasSecurity ? 'Security evidence found.' : 'Sensitive work detected without security review evidence.',
+        hasSecurity ? '' : 'Run /team:security-audit or use security-engineer.',
+      ),
+    );
+  }
+
+  if (require_memory_index) {
+    gates.push(
+      gate(
+        'memory.index',
+        'Memory index current',
+        audit.index_present && !audit.index_stale_sources.length ? 'pass' : 'risk',
+        audit.index_present
+          ? `Backend: ${audit.index_backend || 'unknown'}; stale sources: ${audit.index_stale_sources.length}.`
+          : 'Index missing.',
+        audit.index_present && !audit.index_stale_sources.length ? '' : 'Run /team:memory-index.',
+      ),
+    );
+  }
+
+  const recommendations = [...new Set(gates.filter((item) => item.next).map((item) => item.next))];
+  return {
+    decision: decisionFromGates(gates),
+    session: {
+      session_id: session.session_id,
+      file: session.file,
+      task: session.task,
+      phase,
+      status,
+      next_step: session.next_step,
+    },
+    gates,
+    recommendations,
+  };
+}
+
+async function writeWorkflowReport(kind, result) {
+  await ensureDirs();
+  const safeKind = kind.replace(/[^a-z0-9_-]+/gi, '-').toLowerCase();
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const file = path.join(root, 'reports', `${safeKind}-${stamp}.md`);
+  const body = `# ForgeKit ${kind}
+
+Decision: ${result.decision}
+Session: ${result.session?.session_id || 'none'}
+Task: ${result.session?.task || 'none'}
+
+## Gates
+
+${result.gates.map((item) => `- ${item.status.toUpperCase()} ${item.label}: ${item.evidence}`).join('\n')}
+
+## Recommendations
+
+${result.recommendations.length ? result.recommendations.map((item) => `- ${item}`).join('\n') : '- None'}
+`;
+  await fs.writeFile(file, body, 'utf8');
+  return path.relative(workspacePath, file);
+}
+
+async function handoffReport({ session_id, write_report = false } = {}) {
+  const result = await checkWorkflow({ session_id, release_mode: true });
+  const report = {
+    ...result,
+    handoff_status: result.decision === 'pass' ? 'ready' : 'blocked',
+    rule: 'Do not call work complete or ready for use while blocking gates remain.',
+  };
+  if (write_report) report.report_file = await writeWorkflowReport('handoff-report', report);
+  return report;
+}
+
+async function releaseReadiness({ session_id, write_report = false } = {}) {
+  const result = await checkWorkflow({ session_id, release_mode: true });
+  const report = {
+    ...result,
+    release_status: result.decision === 'pass' ? 'ready' : 'not-ready',
+    rule: 'QA deferred, missing review, unresolved blockers, or stale memory index prevents release readiness.',
+  };
+  if (write_report) report.report_file = await writeWorkflowReport('release-readiness', report);
+  return report;
+}
+
 async function compactMemory({ dry_run = true, max_hot_bytes = 12000, archive_completed_sessions = true } = {}) {
   await ensureDirs();
   const actions = [];
@@ -734,6 +1017,98 @@ server.registerTool(
     inputSchema: z.object({}).shape,
   },
   async () => text(await dashboard()),
+);
+
+server.registerTool(
+  'forgekit_check_workflow',
+  {
+    description: 'Evaluate ForgeKit workflow gates for the active session and return pass, pass-with-risk, or block.',
+    inputSchema: z
+      .object({
+        session_id: z.string().optional(),
+        require_tests: z.boolean().default(true),
+        require_review: z.boolean().default(true),
+        require_memory_index: z.boolean().default(true),
+        require_security_when_sensitive: z.boolean().default(true),
+        release_mode: z.boolean().default(false),
+        write_report: z.boolean().default(false),
+      })
+      .shape,
+  },
+  async ({
+    session_id,
+    require_tests,
+    require_review,
+    require_memory_index,
+    require_security_when_sensitive,
+    release_mode,
+    write_report,
+  }) => {
+    const result = await checkWorkflow({
+      session_id,
+      require_tests,
+      require_review,
+      require_memory_index,
+      require_security_when_sensitive,
+      release_mode,
+    });
+    if (write_report) result.report_file = await writeWorkflowReport('workflow-checkpoint', result);
+    return text(result);
+  },
+);
+
+server.registerTool(
+  'forgekit_record_checkpoint',
+  {
+    description: 'Write a workflow checkpoint report for the active ForgeKit session.',
+    inputSchema: z
+      .object({
+        session_id: z.string().optional(),
+        checkpoint: z.string(),
+        status: z.enum(['pass', 'pass-with-risk', 'block']),
+        evidence: z.string().default(''),
+        next_step: z.string().default(''),
+      })
+      .shape,
+  },
+  async ({ session_id, checkpoint, status, evidence, next_step }) => {
+    const result = {
+      decision: status,
+      session: session_id ? { session_id } : (await checkWorkflow({ session_id })).session,
+      gates: [gate('manual.checkpoint', checkpoint, status === 'pass-with-risk' ? 'risk' : status, evidence, next_step)],
+      recommendations: next_step ? [next_step] : [],
+    };
+    result.report_file = await writeWorkflowReport('manual-checkpoint', result);
+    return text(result);
+  },
+);
+
+server.registerTool(
+  'forgekit_handoff_report',
+  {
+    description: 'Create a handoff decision from workflow gates. Blocks handoff when required gates are missing.',
+    inputSchema: z
+      .object({
+        session_id: z.string().optional(),
+        write_report: z.boolean().default(false),
+      })
+      .shape,
+  },
+  async ({ session_id, write_report }) => text(await handoffReport({ session_id, write_report })),
+);
+
+server.registerTool(
+  'forgekit_release_readiness',
+  {
+    description: 'Evaluate whether the active ForgeKit session is ready for release, PR, or archive.',
+    inputSchema: z
+      .object({
+        session_id: z.string().optional(),
+        write_report: z.boolean().default(false),
+      })
+      .shape,
+  },
+  async ({ session_id, write_report }) => text(await releaseReadiness({ session_id, write_report })),
 );
 
 const transport = new StdioServerTransport();

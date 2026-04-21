@@ -43,10 +43,11 @@ Required flow:
    - `.gemini/context/commands.md` or `.gemini/context/testing.md` if commands/tests changed
    - active session state under `.gemini/forgekit/sessions/active/`
 14. After memory/session updates, refresh `.gemini/forgekit/memory/` using MCP tool `forgekit_index_memory` when available. If MCP is not enabled, run `/team:memory-index` logic manually. If refresh is blocked, report it as deferred.
+15. Run a workflow checkpoint using MCP tool `forgekit_check_workflow` when available, or `/team:checkpoint` logic manually. Do not claim release readiness when checkpoint blocks.
    If writes are blocked, include the exact deferred updates in the final response.
 
 Do not over-engineer.
 Keep changes focused.
-Do not finish without a Memory section in the final response, including memory index refresh status.
+Do not finish without a Memory section in the final response, including memory index refresh status and checkpoint decision.
 If a step is skipped, briefly explain why.
 """

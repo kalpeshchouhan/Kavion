@@ -6,6 +6,7 @@ ForgeKit works without MCP, but MCP gives the team stronger workflow tools:
 - build and search the local memory index
 - audit missing or stale memory
 - compact completed sessions and oversized hot memory
+- evaluate workflow checkpoints, handoff, and release readiness
 - show a project dashboard
 - use optional local LanceDB vector search
 
@@ -67,6 +68,10 @@ The memory source of truth remains markdown under `.gemini/`. The index under
 - `forgekit_audit_memory`
 - `forgekit_compact_memory`
 - `forgekit_dashboard`
+- `forgekit_check_workflow`
+- `forgekit_record_checkpoint`
+- `forgekit_handoff_report`
+- `forgekit_release_readiness`
 
 ## Recommended Test
 

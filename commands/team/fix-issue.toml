@@ -60,11 +60,12 @@ Required flow:
    - Update project memory and active session state when writes are permitted.
    - Refresh `.gemini/forgekit/memory/` using MCP tool `forgekit_index_memory` when available.
    - If MCP is not enabled, run `/team:memory-index` logic manually.
+   - Run a workflow checkpoint using MCP tool `forgekit_check_workflow` when available.
    - If memory or index refresh is blocked, report the exact deferred update.
 
 Do not skip directly to code editing unless the issue is trivial.
 Do not spend many turns on broad exploration before proposing a focused fix.
 If the issue is about project memory or workflow completeness, prefer `devops-docs-engineer`.
 If a step is skipped, briefly explain why.
-Final response must include a Memory section with update and index refresh status.
+Final response must include a Memory section with update, index refresh status, and checkpoint decision.
 """
