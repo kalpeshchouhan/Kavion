@@ -11,6 +11,7 @@ Use this checklist before making ForgeKit public.
    - `docs/ARCHITECTURE.md`
    - `docs/MEMORY.md`
    - `docs/MCP.md`
+   - `docs/WORKFLOW-ENFORCEMENT.md`
 3. Run validation:
 
 ```bash
@@ -30,15 +31,15 @@ git status --short
 Suggested title:
 
 ```text
-Release ForgeKit v0.3.0
+Release ForgeKit v0.4.0
 ```
 
 Suggested summary:
 
 ```text
-- add optional local LanceDB memory backend with JSONL fallback
-- add MCP memory compact/dashboard tools
-- document automatic memory index refresh and MCP setup
+- add workflow enforcement commands and MCP tools
+- distinguish implementation-complete from release-ready
+- block handoff when QA/review/security/memory gates are missing
 ```
 
 ## GitHub Repo Setup
@@ -72,7 +73,7 @@ git push -u origin main
 
 ## Recommended First Release State
 
-Publish as a beta or `v0.3.0` style release, not as a fully stable
+Publish as a beta or `v0.4.0` style release, not as a fully stable
 automation platform.
 
 Current honest positioning:
@@ -80,4 +81,5 @@ Current honest positioning:
 - ready to use
 - strong beta
 - local memory and dashboard tooling are in place
+- workflow enforcement catches false completion states
 - not yet fully battle-tested for long autonomous write-heavy runs across many projects

@@ -45,6 +45,7 @@ Then follow [MCP setup](MCP.md).
 /team:quality-gate
 /team:session-update
 /team:dashboard
+/team:checkpoint
 ```
 
 ## 5. Validate local changes
@@ -61,3 +62,5 @@ node --check mcp-server/index.js
 
 ForgeKit can require memory and index updates, and the dashboard can report
 missing work. Gemini CLI still owns final instruction-following behavior.
+Use `/team:checkpoint` or `/team:release-readiness` when you need a strict
+answer about whether work is truly ready.

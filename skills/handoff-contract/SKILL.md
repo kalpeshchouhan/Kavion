@@ -34,5 +34,7 @@ For docs/memory:
 - Be concise.
 - State when no files were changed.
 - Do not claim tests passed unless they were run.
+- Do not claim ready for use, release-ready, or complete when QA is deferred or workflow gates block.
 - Separate confirmed facts from assumptions.
 - Include blockers explicitly.
+- Include checkpoint or release-readiness decision when available.

@@ -1,0 +1,27 @@
+description = "Check whether the active ForgeKit task is ready for release, PR, or archive."
+
+prompt = """
+Check ForgeKit release readiness.
+
+User request:
+{{args}}
+
+Use MCP tool `forgekit_release_readiness` when available. If MCP is unavailable, manually inspect active session state, reports, memory files, and memory index.
+
+Release readiness requires:
+1. Requirements satisfied.
+2. Tests or equivalent verification passed.
+3. QA is not deferred.
+4. Code review completed.
+5. Security review completed for sensitive work.
+6. No unresolved blockers.
+7. Project memory and session state updated.
+8. Memory index current.
+9. GitHub branch/PR state clear when applicable.
+
+Return one status:
+- ready
+- not-ready
+
+If not-ready, recommend exactly one next command.
+"""

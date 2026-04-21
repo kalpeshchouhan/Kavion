@@ -12,10 +12,13 @@ Use these ForgeKit skills when available:
 
 Required flow:
 1. Inspect `.gemini/forgekit/sessions/active/`.
-2. Identify completed or stale sessions.
-3. Move completed session summaries to `.gemini/forgekit/sessions/archive/`.
-4. Update `.gemini/context/current-work.md` if the active task is complete.
-5. Do not delete important history.
+2. Run `/team:release-readiness` logic or MCP tool `forgekit_release_readiness` when available.
+3. Do not archive an active session as complete if release readiness is blocked.
+4. Identify completed or stale sessions.
+5. Move completed session summaries to `.gemini/forgekit/sessions/archive/`.
+6. Update `.gemini/context/current-work.md` if the active task is complete.
+7. Refresh the memory index after archiving.
+8. Do not delete important history.
 
 If uncertain whether a session is stale, ask before archiving.
 """

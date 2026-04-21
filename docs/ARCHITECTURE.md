@@ -63,6 +63,7 @@ ForgeKit distinguishes:
 - cold archive in `.gemini/archive/`
 - task-local session state in `.gemini/forgekit/`
 - local searchable memory cache in `.gemini/forgekit/memory/`
+- workflow enforcement gates for checkpoint, handoff, and release readiness
 
 The memory cache supports two local modes:
 
@@ -86,7 +87,8 @@ Markdown remains the source of truth; vector data is always rebuildable.
 ### MCP Server
 
 `mcp-server/` is optional. It provides session-state helpers, local memory
-index/search/audit/compact tools, and a dashboard when installed and enabled.
+index/search/audit/compact tools, workflow enforcement tools, and a dashboard
+when installed and enabled.
 
 ## Control Flow
 
@@ -99,10 +101,15 @@ Typical flow:
 5. verification and review run
 6. memory/session state is updated
 7. local memory index is refreshed
-8. final response reports memory files and index refresh status
+8. workflow checkpoint runs
+9. final response reports memory files, index refresh status, and checkpoint decision
 
 ## Current Design Constraint
 
 The hardest part is not startup; it is later-phase convergence in complex bug
 fix runs. That is why command instructions are intentionally strict about
 bounded inspection and stopping conditions.
+
+ForgeKit treats implementation-complete and release-ready as different states.
+Deferred QA, missing review, unresolved blockers, or stale memory blocks handoff
+and archive-as-complete.

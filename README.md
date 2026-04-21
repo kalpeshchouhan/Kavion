@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/kalpeshchouhan/forgekit"><img alt="Version" src="https://img.shields.io/badge/version-0.3.0-202124"></a>
+  <a href="https://github.com/kalpeshchouhan/forgekit"><img alt="Version" src="https://img.shields.io/badge/version-0.4.0-202124"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-00A887"></a>
   <img alt="Gemini CLI" src="https://img.shields.io/badge/Gemini%20CLI-extension-4C7BE8">
   <img alt="MCP" src="https://img.shields.io/badge/MCP-supported-D9A000">
@@ -28,6 +28,7 @@ It provides:
 - project-memory and session-state conventions under `.gemini/`
 - local memory index/search commands with token-safe recall limits
 - optional LanceDB-backed local vector search with JSONL fallback
+- workflow enforcement for checkpoints, handoff, and release readiness
 - optional policy and MCP tooling for stricter workflow control
 
 <p align="center">
@@ -54,6 +55,7 @@ ForgeKit is usable now as a strong beta:
 - orchestration, bug-fix, and quality-gate flows work
 - memory indexing can refresh automatically through the MCP server
 - dashboard, audit, search, and pruning commands are available
+- workflow checkpointing helps prevent false "done" states
 
 The main remaining risk is Gemini CLI runtime compliance: if the main model
 ignores a workflow instruction, ForgeKit can detect and report the missing
@@ -108,6 +110,10 @@ node --check mcp-server/index.js
 - `/team:resume`
 - `/team:archive`
 - `/team:quality-gate`
+- `/team:checkpoint`
+- `/team:workflow-audit`
+- `/team:handoff`
+- `/team:release-readiness`
 - `/team:security-audit`
 - `/team:perf-check`
 - `/team:a11y-audit`
@@ -125,6 +131,7 @@ node --check mcp-server/index.js
 - [ARCHITECTURE](docs/ARCHITECTURE.md)
 - [MEMORY](docs/MEMORY.md)
 - [MCP](docs/MCP.md)
+- [WORKFLOW-ENFORCEMENT](docs/WORKFLOW-ENFORCEMENT.md)
 - [PUBLISHING](docs/PUBLISHING.md)
 - [ADDING-AGENTS](docs/ADDING-AGENTS.md)
 - [ADDING-SKILLS](docs/ADDING-SKILLS.md)
@@ -154,6 +161,7 @@ The optional MCP server powers stronger automation:
 - session status tools
 - memory index/search/audit tools
 - memory compaction helpers
+- workflow checkpoint and release-readiness tools
 - project dashboard
 - optional local LanceDB vector backend
 

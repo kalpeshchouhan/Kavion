@@ -1,0 +1,34 @@
+description = "Check ForgeKit workflow gates for the active session."
+
+prompt = """
+Run a ForgeKit workflow checkpoint.
+
+User request:
+{{args}}
+
+Use MCP tool `forgekit_check_workflow` when available. If MCP is not enabled, inspect these files directly:
+- `.gemini/forgekit/sessions/active/`
+- `.gemini/forgekit/reports/`
+- `.gemini/context/`
+- `.gemini/forgekit/memory/manifest.json`
+
+Required gates:
+1. Project memory exists.
+2. Active session exists and has explicit phase/status.
+3. Blockers are empty, resolved, or explicitly deferred with reason.
+4. Tests or verification are complete, or deferral is clearly marked as risk.
+5. Code review is complete for non-trivial work.
+6. Security review is complete when auth, permissions, secrets, payments, user data, or external input are involved.
+7. Memory index is present and current.
+
+Return one decision:
+- pass
+- pass-with-risk
+- block
+
+Final response must include:
+- decision
+- gate results
+- blocking issues
+- recommended next command
+"""
