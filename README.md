@@ -1,3 +1,19 @@
+<p align="center">
+  <img src="assets/forgekit-banner.svg" alt="ForgeKit: AI software team workflow extension for Gemini CLI" width="100%">
+</p>
+
+<p align="center">
+  <strong>Turn Gemini CLI into a structured AI software team with project memory, specialist agents, MCP tools, QA, review, and GitHub workflow.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/kalpeshchouhan/forgekit"><img alt="Version" src="https://img.shields.io/badge/version-0.3.0-202124"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-00A887"></a>
+  <img alt="Gemini CLI" src="https://img.shields.io/badge/Gemini%20CLI-extension-4C7BE8">
+  <img alt="MCP" src="https://img.shields.io/badge/MCP-supported-D9A000">
+  <img alt="Memory" src="https://img.shields.io/badge/memory-LanceDB%20%7C%20JSONL-D64550">
+</p>
+
 # ForgeKit
 
 ForgeKit is a Gemini CLI extension that turns a single Gemini session into a
@@ -13,6 +29,10 @@ It provides:
 - local memory index/search commands with token-safe recall limits
 - optional LanceDB-backed local vector search with JSONL fallback
 - optional policy and MCP tooling for stricter workflow control
+
+<p align="center">
+  <img src="assets/forgekit-workflow.svg" alt="ForgeKit workflow diagram" width="100%">
+</p>
 
 This repository follows the official Gemini CLI extension shape:
 

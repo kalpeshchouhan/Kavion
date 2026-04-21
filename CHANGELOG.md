@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added README banner and workflow diagram SVG assets for a more polished
+  open-source project presentation.
+
 ## 0.3.0 - 2026-04-22
 
 - Added optional local LanceDB memory backend with JSONL/hash-vector fallback.
