@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- No unreleased changes yet.
+- Updated the SVG workflow and memory diagrams to match the ForgeKit 2 architecture.
 
 ## 0.5.0 - 2026-04-23
 

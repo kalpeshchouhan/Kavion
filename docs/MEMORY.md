@@ -2,6 +2,8 @@
 
 ForgeKit 2 uses a smaller, stricter memory model.
 
+![ForgeKit 2 Memory Flow](../assets/forgekit-memory-flow.svg)
+
 ## Layout
 
 ```text

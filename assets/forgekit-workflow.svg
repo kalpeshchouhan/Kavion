@@ -1,102 +1,134 @@
-<svg width="1280" height="860" viewBox="0 0 1280 860" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">ForgeKit workflow diagram</title>
-  <desc id="desc">ForgeKit workflow showing developer input, the main agent, specialist agents, MCP tools, project memory, quality gates, and GitHub delivery.</desc>
+<svg width="1280" height="900" viewBox="0 0 1280 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">ForgeKit 2 workflow diagram</title>
+  <desc id="desc">ForgeKit 2 workflow showing developer input, the main agent, specialist agents, current memory, plan and report files, real workflow gates, and GitHub-ready delivery.</desc>
 
-  <rect width="1280" height="860" fill="#F7F9FB"/>
+  <rect width="1280" height="900" fill="#F7F9FB"/>
   <defs>
     <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
       <path d="M2 2L10 6L2 10Z" fill="#202124"/>
     </marker>
   </defs>
 
-  <g transform="translate(70 58)">
-    <text x="0" y="0" dominant-baseline="hanging" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="42" font-weight="850" fill="#202124" letter-spacing="0">How ForgeKit Works</text>
-    <text x="0" y="58" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="18" font-weight="600" fill="#5F6368" letter-spacing="0">A practical team workflow for planning, building, testing, reviewing, remembering, and shipping.</text>
+  <g transform="translate(68 54)">
+    <text x="0" y="0" dominant-baseline="hanging" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="42" font-weight="850" fill="#202124">How ForgeKit 2 Works</text>
+    <text x="0" y="56" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="600" fill="#5F6368">Smaller hot memory, search-first recall, real gates, and a stricter path from task to ship.</text>
   </g>
 
-  <g transform="translate(70 150)">
-    <rect width="1140" height="628" rx="8" fill="#FFFFFF" stroke="#202124" stroke-width="2"/>
-    <path d="M0 78H1140" stroke="#DADCE0"/>
+  <g transform="translate(68 140)">
+    <rect width="1144" height="692" rx="8" fill="#FFFFFF" stroke="#202124" stroke-width="2"/>
+    <path d="M0 76H1144" stroke="#DADCE0"/>
     <text x="32" y="48" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Execution Flow</text>
-    <text x="964" y="48" text-anchor="end" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#5F6368">Gemini CLI Extension</text>
-    <rect x="980" y="28" width="118" height="28" rx="8" fill="#202124"/>
-    <text x="1039" y="47" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="800" fill="#FFFFFF">ForgeKit</text>
+    <rect x="986" y="26" width="122" height="30" rx="8" fill="#202124"/>
+    <text x="1047" y="45" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#FFFFFF">ForgeKit 2</text>
 
-    <g transform="translate(36 126)">
-      <rect width="172" height="88" rx="8" fill="#E8F5F1" stroke="#00A887" stroke-width="2"/>
-      <text x="86" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#202124">Developer</text>
-      <text x="86" y="58" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#5F6368">gives the task</text>
+    <g transform="translate(34 116)">
+      <rect width="170" height="90" rx="8" fill="#E8F5F1" stroke="#00A887" stroke-width="2"/>
+      <text x="85" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Developer</text>
+      <text x="85" y="60" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">gives task or gate</text>
     </g>
 
-    <path d="M226 170H304" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M214 161H290" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
 
-    <g transform="translate(322 104)">
-      <rect width="226" height="132" rx="8" fill="#FAFAFA" stroke="#202124" stroke-width="2"/>
-      <text x="113" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Main Agent</text>
-      <text x="113" y="62" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">reads memory</text>
-      <text x="113" y="86" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">plans and delegates</text>
-      <text x="113" y="110" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">owns final response</text>
+    <g transform="translate(308 92)">
+      <rect width="236" height="138" rx="8" fill="#FAFAFA" stroke="#202124" stroke-width="2"/>
+      <text x="118" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Main Agent</text>
+      <text x="118" y="62" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">reads CURRENT.md first</text>
+      <text x="118" y="86" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">delegates only when needed</text>
+      <text x="118" y="110" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">owns the final answer</text>
     </g>
 
-    <path d="M548 170H626" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M544 161H620" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
 
-    <g transform="translate(644 104)">
-      <rect width="460" height="132" rx="8" fill="#EEF3FE" stroke="#4C7BE8" stroke-width="2"/>
-      <text x="230" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Specialist Agents</text>
-      <g transform="translate(28 58)">
-        <rect width="92" height="30" rx="8" fill="#FFFFFF" stroke="#4C7BE8"/>
-        <text x="46" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="800" fill="#202124">Frontend</text>
+    <g transform="translate(638 92)">
+      <rect width="470" height="138" rx="8" fill="#EEF3FE" stroke="#4C7BE8" stroke-width="2"/>
+      <text x="235" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Specialist Agents</text>
+      <g transform="translate(24 58)">
+        <rect width="96" height="30" rx="8" fill="#FFFFFF" stroke="#4C7BE8"/>
+        <text x="48" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="850" fill="#202124">Frontend</text>
       </g>
-      <g transform="translate(134 58)">
-        <rect width="92" height="30" rx="8" fill="#FFFFFF" stroke="#4C7BE8"/>
-        <text x="46" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="800" fill="#202124">Backend</text>
+      <g transform="translate(132 58)">
+        <rect width="96" height="30" rx="8" fill="#FFFFFF" stroke="#4C7BE8"/>
+        <text x="48" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="850" fill="#202124">Backend</text>
       </g>
       <g transform="translate(240 58)">
-        <rect width="92" height="30" rx="8" fill="#FFFFFF" stroke="#4C7BE8"/>
-        <text x="46" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="800" fill="#202124">Database</text>
+        <rect width="96" height="30" rx="8" fill="#FFFFFF" stroke="#4C7BE8"/>
+        <text x="48" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="850" fill="#202124">Database</text>
       </g>
-      <g transform="translate(346 58)">
-        <rect width="86" height="30" rx="8" fill="#FFFFFF" stroke="#4C7BE8"/>
-        <text x="43" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="800" fill="#202124">QA</text>
+      <g transform="translate(348 58)">
+        <rect width="96" height="30" rx="8" fill="#FFFFFF" stroke="#4C7BE8"/>
+        <text x="48" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="850" fill="#202124">QA / Review</text>
       </g>
-      <text x="230" y="112" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">security, review, docs, GitHub, automation when needed</text>
+      <text x="235" y="114" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">security, docs, GitHub, automation, and migration when required</text>
     </g>
 
-    <path d="M435 236V318" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
-    <path d="M874 236V318" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M426 230V306" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M874 230V306" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
 
-    <g transform="translate(210 334)">
-      <rect width="450" height="154" rx="8" fill="#FFF6DE" stroke="#D9A000" stroke-width="2"/>
-      <text x="225" y="36" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Project Memory System</text>
-      <text x="225" y="66" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">hot context, sessions, plans, reports, notes, archive</text>
-      <text x="225" y="92" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">local recall: LanceDB when available, JSONL fallback always</text>
-      <g transform="translate(116 112)">
-        <rect width="218" height="28" rx="8" fill="#202124"/>
-        <text x="109" y="19" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#FFFFFF">/team:dashboard</text>
-      </g>
-    </g>
-
-    <g transform="translate(712 334)">
-      <rect width="392" height="154" rx="8" fill="#FDECEE" stroke="#D64550" stroke-width="2"/>
-      <text x="196" y="36" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Quality Gate</text>
-      <text x="196" y="66" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">tests, security checks, code review</text>
-      <text x="196" y="92" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">memory closeout before final response</text>
-      <g transform="translate(87 112)">
-        <rect width="218" height="28" rx="8" fill="#202124"/>
-        <text x="109" y="19" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#FFFFFF">/team:quality-gate</text>
+    <g transform="translate(128 322)">
+      <rect width="372" height="176" rx="8" fill="#FFF6DE" stroke="#D9A000" stroke-width="2"/>
+      <text x="186" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Project Memory</text>
+      <text x="186" y="64" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">CURRENT.md + session.json are hot memory</text>
+      <text x="186" y="88" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">PROJECT.md and DECISIONS.md are read on demand</text>
+      <text x="186" y="112" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">plans, reports, notes, and history stay local</text>
+      <g transform="translate(93 132)">
+        <rect width="186" height="28" rx="8" fill="#202124"/>
+        <text x="93" y="19" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#FFFFFF">/forge:search</text>
       </g>
     </g>
 
-    <path d="M435 488V548" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
-    <path d="M908 488V548" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
-
-    <g transform="translate(210 564)">
-      <rect width="450" height="44" rx="8" fill="#E8F5F1" stroke="#00A887" stroke-width="2"/>
-      <text x="225" y="28" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="850" fill="#202124">Updated memory and session state</text>
+    <g transform="translate(548 322)">
+      <rect width="278" height="176" rx="8" fill="#EAF2FF" stroke="#4C7BE8" stroke-width="2"/>
+      <text x="139" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Local BM25 Index</text>
+      <text x="139" y="64" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">index/chunks.jsonl</text>
+      <text x="139" y="88" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">index/bm25.json</text>
+      <text x="139" y="112" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">search first, read full files only if needed</text>
+      <g transform="translate(46 132)">
+        <rect width="186" height="28" rx="8" fill="#202124"/>
+        <text x="93" y="19" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#FFFFFF">/team:memory-index</text>
+      </g>
     </g>
-    <g transform="translate(712 564)">
-      <rect width="392" height="44" rx="8" fill="#EEF3FE" stroke="#4C7BE8" stroke-width="2"/>
-      <text x="196" y="28" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="850" fill="#202124">GitHub-ready implementation</text>
+
+    <g transform="translate(874 322)">
+      <rect width="236" height="176" rx="8" fill="#FDECEE" stroke="#D64550" stroke-width="2"/>
+      <text x="118" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Real Gates</text>
+      <text x="118" y="64" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">plan, test, review</text>
+      <text x="118" y="88" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">security, ship</text>
+      <text x="118" y="112" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">command output and git state decide</text>
+      <g transform="translate(25 132)">
+        <rect width="186" height="28" rx="8" fill="#202124"/>
+        <text x="93" y="19" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#FFFFFF">/forge:gate ship</text>
+      </g>
+    </g>
+
+    <path d="M314 498V566" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M687 498V566" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M992 498V566" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <g transform="translate(116 582)">
+      <rect width="396" height="138" rx="8" fill="#FAFAFA" stroke="#202124" stroke-width="2"/>
+      <text x="198" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Memory Closeout</text>
+      <text x="198" y="64" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">update CURRENT.md, session.json, plans, reports</text>
+      <text x="198" y="88" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">rebuild index only after meaningful memory changes</text>
+      <text x="198" y="112" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#202124">smaller hot memory, less token waste</text>
+    </g>
+
+    <g transform="translate(548 582)">
+      <rect width="278" height="138" rx="8" fill="#E8F5F1" stroke="#00A887" stroke-width="2"/>
+      <text x="139" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Migration Path</text>
+      <text x="139" y="64" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">old context and session folders</text>
+      <text x="139" y="88" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">convert into ForgeKit 2 files</text>
+      <g transform="translate(46 104)">
+        <rect width="186" height="28" rx="8" fill="#202124"/>
+        <text x="93" y="19" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#FFFFFF">/forge:migrate</text>
+      </g>
+    </g>
+
+    <g transform="translate(862 582)">
+      <rect width="248" height="138" rx="8" fill="#EEF3FE" stroke="#4C7BE8" stroke-width="2"/>
+      <text x="124" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Delivery</text>
+      <text x="124" y="64" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">honest ready / not-ready signal</text>
+      <text x="124" y="88" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">GitHub-ready branch and reports</text>
+      <text x="124" y="112" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#202124">ship only when gates pass</text>
     </g>
   </g>
 </svg>
