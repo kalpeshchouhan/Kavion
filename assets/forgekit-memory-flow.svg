@@ -1,123 +1,147 @@
-<svg width="1280" height="940" viewBox="0 0 1280 940" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">ForgeKit 2 memory flow</title>
-  <desc id="desc">Diagram explaining how ForgeKit 2 initializes project memory, keeps hot memory small, stores plans and reports, indexes memory locally with BM25, and migrates old project layouts.</desc>
+<svg width="1280" height="920" viewBox="0 0 1280 920" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">ForgeKit 2 memory architecture</title>
+  <desc id="desc">Professional memory architecture diagram for ForgeKit 2 showing hot memory, on-demand project memory, plans and reports, local BM25 indexing, migration from the old layout, and bounded memory hygiene.</desc>
 
-  <rect width="1280" height="940" fill="#F7F9FB"/>
+  <rect width="1280" height="920" fill="#F3F4F6"/>
+
   <defs>
     <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
-      <path d="M2 2L10 6L2 10Z" fill="#202124"/>
+      <path d="M2 2L10 6L2 10Z" fill="#1F2937"/>
     </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#111827" flood-opacity="0.08"/>
+    </filter>
   </defs>
 
-  <g transform="translate(72 54)">
-    <text x="0" y="0" dominant-baseline="hanging" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="42" font-weight="850" fill="#202124">ForgeKit 2 Memory System</text>
-    <text x="0" y="58" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="600" fill="#5F6368">Files stay local. Hot memory stays small. BM25 index is rebuildable. Old projects can migrate forward.</text>
-  </g>
+  <g transform="translate(64 52)">
+    <text x="0" y="0" dominant-baseline="hanging" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="40" font-weight="850" fill="#111827">ForgeKit 2 Memory Architecture</text>
+    <text x="0" y="54" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="600" fill="#4B5563">Local-first memory model with bounded hot context, migration support, and rebuildable BM25 search.</text>
 
-  <g transform="translate(72 142)">
-    <rect width="1136" height="724" rx="8" fill="#FFFFFF" stroke="#202124" stroke-width="2"/>
-    <rect width="1136" height="64" rx="8" fill="#202124"/>
-    <text x="32" y="41" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#FFFFFF">Local project folder: .gemini/forgekit/</text>
-    <text x="1100" y="41" text-anchor="end" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="750" fill="#FFFFFF">No hosted memory server</text>
+    <g transform="translate(0 94)">
+      <rect width="1152" height="714" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
 
-    <g transform="translate(36 110)">
-      <rect width="210" height="94" rx="8" fill="#E8F5F1" stroke="#00A887" stroke-width="2"/>
-      <text x="105" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#202124">/team:init-project</text>
-      <text x="105" y="60" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">or /forge:init-project</text>
-    </g>
+      <g>
+        <rect width="1152" height="72" rx="8" fill="#111827"/>
+        <text x="28" y="45" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#FFFFFF">Memory Zones</text>
+        <g transform="translate(860 20)">
+          <rect width="94" height="30" rx="8" fill="#14B8A6"/>
+          <text x="47" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="800" fill="#082F49">hot</text>
+        </g>
+        <g transform="translate(964 20)">
+          <rect width="104" height="30" rx="8" fill="#F59E0B"/>
+          <text x="52" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="800" fill="#3F2A00">on-demand</text>
+        </g>
+        <g transform="translate(1078 20)">
+          <rect width="46" height="30" rx="8" fill="#A78BFA"/>
+          <text x="23" y="20" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="800" fill="#1E1B4B">cache</text>
+        </g>
+      </g>
 
-    <path d="M258 157H330" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+      <text x="28" y="104" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="800" fill="#6B7280">CANONICAL FILES</text>
 
-    <g transform="translate(348 88)">
-      <rect width="350" height="138" rx="8" fill="#FFF6DE" stroke="#D9A000" stroke-width="2"/>
-      <text x="175" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Hot Memory + Repo Memory</text>
-      <text x="175" y="64" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">CURRENT.md</text>
-      <text x="175" y="86" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">session.json</text>
-      <text x="175" y="108" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">PROJECT.md and DECISIONS.md only when relevant</text>
-    </g>
+      <g transform="translate(28 128)" filter="url(#shadow)">
+        <rect width="220" height="150" rx="8" fill="#ECFEFF" stroke="#99F6E4" stroke-width="1.5"/>
+        <rect width="220" height="8" rx="8" fill="#14B8A6"/>
+        <text x="18" y="38" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#111827">Hot Memory</text>
+        <text x="18" y="68" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">CURRENT.md</text>
+        <text x="18" y="92" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">session.json</text>
+        <text x="18" y="120" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Minimal startup context for the next turn.</text>
+      </g>
 
-    <path d="M712 157H784" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+      <g transform="translate(276 128)" filter="url(#shadow)">
+        <rect width="220" height="150" rx="8" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1.5"/>
+        <rect width="220" height="8" rx="8" fill="#F59E0B"/>
+        <text x="18" y="38" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#111827">Repo Memory</text>
+        <text x="18" y="68" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">PROJECT.md</text>
+        <text x="18" y="92" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">DECISIONS.md</text>
+        <text x="18" y="120" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Read only when the task needs architecture or prior decisions.</text>
+      </g>
 
-    <g transform="translate(802 88)">
-      <rect width="298" height="138" rx="8" fill="#EEF3FE" stroke="#4C7BE8" stroke-width="2"/>
-      <text x="149" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#202124">Search Cache</text>
-      <text x="149" y="64" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">index/chunks.jsonl</text>
-      <text x="149" y="86" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">index/bm25.json</text>
-      <text x="149" y="108" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="850" fill="#202124">local BM25, rebuildable</text>
-    </g>
+      <g transform="translate(524 128)" filter="url(#shadow)">
+        <rect width="220" height="150" rx="8" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+        <text x="18" y="38" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#111827">Execution Files</text>
+        <text x="18" y="68" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">plans/</text>
+        <text x="18" y="92" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">reports/</text>
+        <text x="18" y="116" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">history.jsonl</text>
+      </g>
 
-    <path d="M520 226V294" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
-    <path d="M950 226V294" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+      <g transform="translate(772 128)" filter="url(#shadow)">
+        <rect width="220" height="150" rx="8" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+        <text x="18" y="38" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#111827">Notes</text>
+        <text x="18" y="68" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">notes/</text>
+        <text x="18" y="94" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Optional research and debugging artifacts.</text>
+        <text x="18" y="118" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">TTL keeps the folder from turning into landfill.</text>
+      </g>
 
-    <g transform="translate(78 314)">
-      <rect width="236" height="136" rx="8" fill="#FAFAFA" stroke="#202124" stroke-width="2"/>
-      <text x="118" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#202124">Before Work</text>
-      <text x="118" y="62" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">read CURRENT.md first</text>
-      <text x="118" y="84" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">search memory chunks</text>
-      <text x="118" y="106" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">avoid loading everything</text>
-    </g>
+      <g transform="translate(28 320)" filter="url(#shadow)">
+        <rect width="964" height="170" rx="8" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="1.5"/>
+        <rect width="964" height="8" rx="8" fill="#A78BFA"/>
+        <text x="18" y="38" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#111827">Local Search Cache</text>
+        <text x="18" y="68" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">index/chunks.jsonl</text>
+        <text x="18" y="92" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#111827">index/bm25.json</text>
+        <text x="18" y="120" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Built from the canonical files. Search returns focused chunks so the model does not load full memory files by default.</text>
+        <text x="18" y="144" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Rebuildable cache only. Files remain the source of truth.</text>
+      </g>
 
-    <g transform="translate(358 314)">
-      <rect width="236" height="136" rx="8" fill="#FDECEE" stroke="#D64550" stroke-width="2"/>
-      <text x="118" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#202124">During Work</text>
-      <text x="118" y="62" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">update session.json</text>
-      <text x="118" y="84" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">write plans and reports</text>
-      <text x="118" y="106" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">notes only if reusable</text>
-    </g>
+      <g transform="translate(1016 320)" filter="url(#shadow)">
+        <rect width="108" height="170" rx="8" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+        <text x="54" y="42" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="850" fill="#111827">BM25</text>
+        <text x="54" y="72" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#111827">local</text>
+        <text x="54" y="96" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#111827">fast</text>
+        <text x="54" y="120" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#111827">simple</text>
+      </g>
 
-    <g transform="translate(638 314)">
-      <rect width="236" height="136" rx="8" fill="#E8F5F1" stroke="#00A887" stroke-width="2"/>
-      <text x="118" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#202124">After Work</text>
-      <text x="118" y="62" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">refresh CURRENT.md</text>
-      <text x="118" y="84" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">rebuild index if dirty</text>
-      <text x="118" y="106" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">gate decides done / not-ready</text>
-    </g>
+      <path d="M138 278V310" stroke="#1F2937" stroke-width="2" marker-end="url(#arrow)"/>
+      <path d="M386 278V310" stroke="#1F2937" stroke-width="2" marker-end="url(#arrow)"/>
+      <path d="M634 278V310" stroke="#1F2937" stroke-width="2" marker-end="url(#arrow)"/>
+      <path d="M882 278V310" stroke="#1F2937" stroke-width="2" marker-end="url(#arrow)"/>
 
-    <g transform="translate(918 314)">
-      <rect width="180" height="136" rx="8" fill="#EAF2FF" stroke="#4C7BE8" stroke-width="2"/>
-      <text x="90" y="34" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#202124">History</text>
-      <text x="90" y="62" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">history.jsonl</text>
-      <text x="90" y="84" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">completed sessions</text>
-    </g>
+      <text x="28" y="524" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="800" fill="#6B7280">LIFECYCLE</text>
 
-    <path d="M314 382H346" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
-    <path d="M594 382H626" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
-    <path d="M874 382H906" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+      <g transform="translate(28 548)" filter="url(#shadow)">
+        <rect width="212" height="136" rx="8" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+        <text x="18" y="34" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#111827">1. Initialize</text>
+        <text x="18" y="62" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Create ForgeKit 2 files and default gate config.</text>
+        <text x="18" y="96" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#111827">/team:init-project</text>
+        <text x="18" y="118" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#111827">/forge:init-project</text>
+      </g>
 
-    <g transform="translate(78 504)">
-      <rect width="236" height="112" rx="8" fill="#FFFFFF" stroke="#DADCE0" stroke-width="2"/>
-      <text x="118" y="32" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="850" fill="#202124">/forge:search</text>
-      <text x="118" y="58" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">search relevant chunks</text>
-      <text x="118" y="80" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">read full files only if needed</text>
-    </g>
+      <g transform="translate(268 548)" filter="url(#shadow)">
+        <rect width="212" height="136" rx="8" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+        <text x="18" y="34" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#111827">2. Work</text>
+        <text x="18" y="62" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Update session.json, write plans and reports, and keep hot memory short.</text>
+      </g>
 
-    <g transform="translate(358 504)">
-      <rect width="236" height="112" rx="8" fill="#FFFFFF" stroke="#DADCE0" stroke-width="2"/>
-      <text x="118" y="32" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="850" fill="#202124">/forge:gate</text>
-      <text x="118" y="58" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">plan, test, review, security, ship</text>
-      <text x="118" y="80" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">real command and git evidence</text>
-    </g>
+      <g transform="translate(508 548)" filter="url(#shadow)">
+        <rect width="212" height="136" rx="8" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+        <text x="18" y="34" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#111827">3. Search</text>
+        <text x="18" y="62" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Search chunks first, then read only the specific source files needed.</text>
+        <text x="18" y="96" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#111827">/forge:search</text>
+      </g>
 
-    <g transform="translate(638 504)">
-      <rect width="236" height="112" rx="8" fill="#FFFFFF" stroke="#DADCE0" stroke-width="2"/>
-      <text x="118" y="32" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="850" fill="#202124">/team:memory-compact</text>
-      <text x="118" y="58" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">expire notes and flag oversized files</text>
-      <text x="118" y="80" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">keep hot memory bounded</text>
-    </g>
+      <g transform="translate(748 548)" filter="url(#shadow)">
+        <rect width="212" height="136" rx="8" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+        <text x="18" y="34" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#111827">4. Clean</text>
+        <text x="18" y="62" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Expire old notes, flag oversized files, and rebuild the cache when dirty.</text>
+        <text x="18" y="96" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#111827">/team:memory-compact</text>
+      </g>
 
-    <g transform="translate(918 504)">
-      <rect width="180" height="112" rx="8" fill="#FFFFFF" stroke="#DADCE0" stroke-width="2"/>
-      <text x="90" y="32" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="850" fill="#202124">/forge:migrate</text>
-      <text x="90" y="58" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">old layout</text>
-      <text x="90" y="80" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#5F6368">to ForgeKit 2</text>
-    </g>
+      <g transform="translate(988 548)" filter="url(#shadow)">
+        <rect width="136" height="136" rx="8" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text x="18" y="34" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#111827">5. Migrate</text>
+        <text x="18" y="62" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#4B5563">Convert older layouts forward.</text>
+        <text x="18" y="102" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" fill="#111827">/forge:migrate</text>
+      </g>
 
-    <path d="M520 616V680" stroke="#202124" stroke-width="2" marker-end="url(#arrow)"/>
+      <path d="M240 616H258" stroke="#1F2937" stroke-width="2" marker-end="url(#arrow)"/>
+      <path d="M480 616H498" stroke="#1F2937" stroke-width="2" marker-end="url(#arrow)"/>
+      <path d="M720 616H738" stroke="#1F2937" stroke-width="2" marker-end="url(#arrow)"/>
+      <path d="M960 616H978" stroke="#1F2937" stroke-width="2" marker-end="url(#arrow)"/>
 
-    <g transform="translate(238 696)">
-      <rect width="660" height="92" rx="8" fill="#202124"/>
-      <text x="330" y="32" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="850" fill="#FFFFFF">Result</text>
-      <text x="330" y="56" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="650" fill="#FFFFFF">smaller startup context, local searchable memory, less wasted model work, and a clearer done / not-ready signal</text>
+      <g transform="translate(28 694)">
+        <rect width="1096" height="24" rx="8" fill="#F9FAFB"/>
+        <text x="0" y="17" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" fill="#6B7280">This layout intentionally reduces startup tokens: hot memory is small, repo memory is read on demand, and local search narrows what the model needs to inspect.</text>
+      </g>
     </g>
   </g>
 </svg>
