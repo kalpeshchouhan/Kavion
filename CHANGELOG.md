@@ -4,6 +4,13 @@
 
 - No unreleased changes yet.
 
+## 0.4.1 - 2026-04-23
+
+- Bumped patch version after the Standard workflow plan/report enforcement fix
+  was merged to `main`.
+- Kept extension, MCP package, lockfile, README badge, and changelog versions in
+  sync.
+
 ## 0.4.0 - 2026-04-22
 
 - Added workflow enforcement commands:
