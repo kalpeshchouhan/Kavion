@@ -4,7 +4,7 @@ prompt = """
 Update Kavion session state for the current task.
 
 Required:
-1. Inspect `.gemini/kavion/session.json`.
+1. Inspect `.kavion/session.json`.
 2. If no active session exists and the task is non-trivial, create a concise session state.
 3. Update the live session with:
    - current phase
@@ -15,10 +15,10 @@ Required:
    - blockers
    - next step
    - last update time
-4. If a detailed plan exists, keep it under `.gemini/kavion/plans/`.
-5. If review or QA output exists, keep it under `.gemini/kavion/reports/`.
-6. If there are reusable debugging or investigation findings, keep them under `.gemini/kavion/notes/`.
-7. Refresh `.gemini/kavion/index/` after session updates.
+4. If a detailed plan exists, keep it under `.kavion/plans/`.
+5. If review or QA output exists, keep it under `.kavion/reports/`.
+6. If there are reusable debugging or investigation findings, keep them under `.kavion/notes/`.
+7. Refresh `.kavion/index/` after session updates.
 
 Do not rewrite unrelated memory files.
 Do not archive the active session unless the task is complete or explicitly paused.

@@ -6,19 +6,19 @@ Build or refresh the local Kavion memory index.
 Use MCP tool `kavion_build_index` when available. If the MCP server is not enabled, create or update the index manually using normal file tools.
 
 Index these sources:
-- `.gemini/kavion/PROJECT.md`
-- `.gemini/kavion/DECISIONS.md`
-- `.gemini/kavion/CURRENT.md`
-- `.gemini/kavion/session.json`
-- `.gemini/kavion/history.jsonl`
-- `.gemini/kavion/plans/`
-- `.gemini/kavion/reports/`
-- `.gemini/kavion/notes/`
+- `.kavion/PROJECT.md`
+- `.kavion/DECISIONS.md`
+- `.kavion/CURRENT.md`
+- `.kavion/session.json`
+- `.kavion/history.jsonl`
+- `.kavion/plans/`
+- `.kavion/reports/`
+- `.kavion/notes/`
 
 Write index files under:
-- `.gemini/kavion/index/chunks.jsonl`
-- `.gemini/kavion/index/bm25.json`
-- `.gemini/kavion/index/.dirty`
+- `.kavion/index/chunks.jsonl`
+- `.kavion/index/bm25.json`
+- `.kavion/index/.dirty`
 
 Rules:
 1. Markdown and session files remain the source of truth.

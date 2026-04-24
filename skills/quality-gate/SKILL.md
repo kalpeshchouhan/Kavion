@@ -20,8 +20,8 @@ Check:
 - GitHub branch, issue, and PR state are clear.
 - Workflow checkpoint passes.
 - Release readiness is not claimed when QA is deferred.
-- Standard work has a persisted plan under `.gemini/kavion/plans/`.
-- Standard work has QA/test and code-review reports under `.gemini/kavion/reports/`.
+- Standard work has a persisted plan under `.kavion/plans/`.
+- Standard work has QA/test and code-review reports under `.kavion/reports/`.
 
 ## Decisions
 

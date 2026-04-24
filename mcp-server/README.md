@@ -62,7 +62,7 @@ Add this to `gemini-extension.json`:
 The local search cache lives under:
 
 ```text
-.gemini/kavion/index/
+.kavion/index/
   chunks.jsonl
   bm25.json
   .dirty

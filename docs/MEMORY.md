@@ -7,7 +7,7 @@ Kavion uses a smaller, stricter memory model.
 ## Layout
 
 ```text
-.gemini/kavion/
+.kavion/
   PROJECT.md
   DECISIONS.md
   DECISIONS-archive.md
@@ -75,8 +75,8 @@ Kavion uses a smaller, stricter memory model.
 Kavion indexes memory into:
 
 ```text
-.gemini/kavion/index/chunks.jsonl
-.gemini/kavion/index/bm25.json
+.kavion/index/chunks.jsonl
+.kavion/index/bm25.json
 ```
 
 Use:
@@ -99,8 +99,8 @@ Older Kavion projects may still have:
 ```text
 .gemini/context/
 .gemini/archive/
-.gemini/kavion/sessions/
-.gemini/kavion/memory/
+.kavion/sessions/
+.kavion/memory/
 ```
 
 Kavion can migrate those into the new structure with:

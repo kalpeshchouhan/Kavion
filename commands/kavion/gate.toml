@@ -17,5 +17,5 @@ Allowed gates:
 - ship
 
 Prefer real command output and filesystem state over self-reported claims.
-If a gate writes a report, store it under `.gemini/kavion/reports/`.
+If a gate writes a report, store it under `.kavion/reports/`.
 """

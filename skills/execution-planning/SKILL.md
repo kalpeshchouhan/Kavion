@@ -14,7 +14,7 @@ Use this skill when work needs more than one step or more than one specialist.
 4. Put investigation before implementation.
 5. Put tests and review after implementation.
 6. Keep the plan proportional to risk.
-7. For Standard or multi-phase work, persist the plan under `.gemini/kavion/plans/` before implementation.
+7. For Standard or multi-phase work, persist the plan under `.kavion/plans/` before implementation.
 8. Prefer MCP tool `kavion_write_plan` when available.
 9. Do not keep the only copy of the plan in chat text.
 

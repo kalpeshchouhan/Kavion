@@ -57,7 +57,7 @@ Inside the CLI:
 Kavion uses:
 
 ```text
-.gemini/kavion/
+.kavion/
   PROJECT.md
   DECISIONS.md
   DECISIONS-archive.md

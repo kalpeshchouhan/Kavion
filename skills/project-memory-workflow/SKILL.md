@@ -1,6 +1,6 @@
 ---
 name: project-memory-workflow
-description: Use this skill to initialize, update, prune, or search Kavion project memory files such as GEMINI.md, PROJECT.md, DECISIONS.md, CURRENT.md, notes, plans, reports, and the local BM25 index.
+description: Use this skill to initialize, update, prune, or search Kavion project memory files such as KAVION.md, PROJECT.md, DECISIONS.md, CURRENT.md, notes, plans, reports, and the local BM25 index.
 ---
 # Project memory workflow
 
@@ -8,13 +8,13 @@ Use this skill to maintain long-term project memory without wasting context.
 
 ## Memory tiers
 
-- Hot memory: `GEMINI.md`, `.gemini/kavion/CURRENT.md`, and `.gemini/kavion/session.json`
-- Repo memory: `.gemini/kavion/PROJECT.md`
-- Decision log: `.gemini/kavion/DECISIONS.md`
-- Warm notes: `.gemini/kavion/notes/`
-- Plans: `.gemini/kavion/plans/`
-- Reports: `.gemini/kavion/reports/`
-- Local index: `.gemini/kavion/index/`
+- Hot memory: `KAVION.md`, `.kavion/CURRENT.md`, and `.kavion/session.json`
+- Repo memory: `.kavion/PROJECT.md`
+- Decision log: `.kavion/DECISIONS.md`
+- Warm notes: `.kavion/notes/`
+- Plans: `.kavion/plans/`
+- Reports: `.kavion/reports/`
+- Local index: `.kavion/index/`
 
 ## Workflow
 
@@ -39,5 +39,5 @@ Use this skill to maintain long-term project memory without wasting context.
 ## Local index rules
 
 - Files are the source of truth.
-- `.gemini/kavion/index/` is a rebuildable BM25 cache.
+- `.kavion/index/` is a rebuildable BM25 cache.
 - Search results are hints; read the source file before relying on a recalled chunk.

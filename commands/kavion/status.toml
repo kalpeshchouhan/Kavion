@@ -6,9 +6,9 @@ Show Kavion status for this project.
 Use MCP tool `kavion_status` when available.
 
 Check:
-- `.gemini/kavion/CURRENT.md`
-- `.gemini/kavion/session.json`
-- `.gemini/kavion/index/`
+- `.kavion/CURRENT.md`
+- `.kavion/session.json`
+- `.kavion/index/`
 - git branch and git status
 
 Return:

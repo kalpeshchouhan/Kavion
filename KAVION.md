@@ -17,18 +17,18 @@ Use Kavion for serious software work: feature implementation, bug fixes, debuggi
 For non-trivial coding work:
 
 1. Consult relevant Kavion skill files when available.
-2. Check whether Kavion project memory exists. If `GEMINI.md` or `.gemini/kavion/CURRENT.md` is missing, initialize project memory before implementation or report that memory initialization is required.
-3. Read `.gemini/kavion/CURRENT.md` first.
-4. Read `.gemini/kavion/PROJECT.md` and `.gemini/kavion/DECISIONS.md` only when the task actually needs them.
-5. For Standard work, create or update `.gemini/kavion/session.json` before implementation when writes are permitted.
-6. Use plans for multi-step work under `.gemini/kavion/plans/plan-<slug>.md`.
+2. Check whether Kavion project memory exists. If `KAVION.md` or `.kavion/CURRENT.md` is missing, initialize project memory before implementation or report that memory initialization is required.
+3. Read `.kavion/CURRENT.md` first.
+4. Read `.kavion/PROJECT.md` and `.kavion/DECISIONS.md` only when the task actually needs them.
+5. For Standard work, create or update `.kavion/session.json` before implementation when writes are permitted.
+6. Use plans for multi-step work under `.kavion/plans/plan-<slug>.md`.
 7. Use real commands and filesystem state for verification and gates.
 8. Use `qa-test-engineer` for verification.
 9. Use `security-engineer` when auth, permissions, secrets, payments, user data, or external input are involved.
 10. Use `code-reviewer` before the final response.
 11. Use `github-workflow-manager` for GitHub issues, branches, PRs, review comments, and CI status.
 12. Before final response, update project memory and session state when writes are permitted.
-13. After updating memory or session state, refresh `.gemini/kavion/index/` using `kavion_build_index` when MCP is available, or `/kavion:memory-index` when it is not.
+13. After updating memory or session state, refresh `.kavion/index/` using `kavion_build_index` when MCP is available, or `/kavion:memory-index` when it is not.
 14. Run a workflow checkpoint before handoff. Do not call work release-ready when ship gate blocks.
 
 Do not treat memory as optional for non-trivial work.

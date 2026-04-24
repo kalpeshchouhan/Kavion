@@ -4,12 +4,12 @@ prompt = """
 Show the Kavion project dashboard.
 
 Use MCP tool `kavion_status` when available. If MCP is not enabled, inspect these project files directly:
-- `.gemini/kavion/CURRENT.md`
-- `.gemini/kavion/PROJECT.md`
-- `.gemini/kavion/session.json`
-- `.gemini/kavion/plans/`
-- `.gemini/kavion/reports/`
-- `.gemini/kavion/index/`
+- `.kavion/CURRENT.md`
+- `.kavion/PROJECT.md`
+- `.kavion/session.json`
+- `.kavion/plans/`
+- `.kavion/reports/`
+- `.kavion/index/`
 
 Return:
 - active task

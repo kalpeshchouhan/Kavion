@@ -11,12 +11,12 @@ Use MCP tool `kavion_migrate` when available.
 Default to dry-run unless the user clearly asks to apply the migration.
 
 Target layout:
-- `.gemini/kavion/PROJECT.md`
-- `.gemini/kavion/DECISIONS.md`
-- `.gemini/kavion/CURRENT.md`
-- `.gemini/kavion/session.json`
-- `.gemini/kavion/history.jsonl`
-- `.gemini/kavion/gates.yaml`
-- `.gemini/kavion/index/chunks.jsonl`
-- `.gemini/kavion/index/bm25.json`
+- `.kavion/PROJECT.md`
+- `.kavion/DECISIONS.md`
+- `.kavion/CURRENT.md`
+- `.kavion/session.json`
+- `.kavion/history.jsonl`
+- `.kavion/gates.yaml`
+- `.kavion/index/chunks.jsonl`
+- `.kavion/index/bm25.json`
 """

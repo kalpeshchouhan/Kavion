@@ -9,12 +9,12 @@ User query:
 Use MCP tool `kavion_search` when available.
 
 Search these sources through the local BM25 index:
-- `.gemini/kavion/PROJECT.md`
-- `.gemini/kavion/DECISIONS.md`
-- `.gemini/kavion/CURRENT.md`
-- `.gemini/kavion/plans/`
-- `.gemini/kavion/reports/`
-- `.gemini/kavion/notes/`
+- `.kavion/PROJECT.md`
+- `.kavion/DECISIONS.md`
+- `.kavion/CURRENT.md`
+- `.kavion/plans/`
+- `.kavion/reports/`
+- `.kavion/notes/`
 
 Return top matching chunks first. Read full files only if needed.
 """

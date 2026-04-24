@@ -24,8 +24,8 @@ Kavion uses an MCP server for workspace memory, search, migration, and real gate
 The MCP server builds:
 
 ```text
-.gemini/kavion/index/chunks.jsonl
-.gemini/kavion/index/bm25.json
+.kavion/index/chunks.jsonl
+.kavion/index/bm25.json
 ```
 
 This replaces the older LanceDB/vector setup.

@@ -9,15 +9,16 @@ import MiniSearch from 'minisearch';
 import YAML from 'yaml';
 
 const workspacePath = process.env.KAVION_WORKSPACE_PATH || process.env.FORGEKIT_WORKSPACE_PATH || process.cwd();
-const geminiRoot = path.join(workspacePath, '.gemini');
-const kavionRoot = path.join(geminiRoot, 'kavion');
+const kavionRoot = path.join(workspacePath, '.kavion');
 const indexRoot = path.join(kavionRoot, 'index');
 const notesRoot = path.join(kavionRoot, 'notes');
 const plansRoot = path.join(kavionRoot, 'plans');
 const reportsRoot = path.join(kavionRoot, 'reports');
-const legacyContextRoot = path.join(geminiRoot, 'context');
-const legacyArchiveRoot = path.join(geminiRoot, 'archive');
-const legacyForgeRoot = path.join(geminiRoot, 'forgekit');
+const legacyGeminiRoot = path.join(workspacePath, '.gemini');
+const legacyGeminiKavionRoot = path.join(legacyGeminiRoot, 'kavion');
+const legacyContextRoot = path.join(legacyGeminiRoot, 'context');
+const legacyArchiveRoot = path.join(legacyGeminiRoot, 'archive');
+const legacyForgeRoot = path.join(legacyGeminiRoot, 'forgekit');
 const legacySessionsRoot = path.join(legacyForgeRoot, 'sessions');
 const legacyMemoryRoot = path.join(legacyForgeRoot, 'memory');
 
@@ -73,7 +74,7 @@ function rel(filePath) {
 }
 
 function rootRel(filePath) {
-  return path.relative(geminiRoot, filePath).replace(/\\/g, '/');
+  return path.relative(workspacePath, filePath).replace(/\\/g, '/');
 }
 
 function isoNow() {
@@ -360,23 +361,25 @@ function markdownChunks(content) {
 
 function inferType(filePath) {
   const relative = rootRel(filePath);
-  if (relative === 'kavion/PROJECT.md') return 'project';
-  if (relative === 'kavion/DECISIONS.md' || relative === 'kavion/DECISIONS-archive.md') return 'decisions';
-  if (relative === 'kavion/CURRENT.md') return 'current';
-  if (relative === 'kavion/session.json' || relative === 'kavion/history.jsonl') return 'session';
-  if (relative.startsWith('kavion/plans/')) return 'plan';
-  if (relative.startsWith('kavion/reports/')) return 'report';
-  if (relative.startsWith('kavion/notes/')) return 'note';
-  if (relative.startsWith('context/')) return 'legacy-context';
-  if (relative.startsWith('archive/')) return 'legacy-archive';
+  const normalized = relative.replace(/^\.gemini\/kavion\//, '.kavion/');
+  if (normalized === '.kavion/PROJECT.md') return 'project';
+  if (normalized === '.kavion/DECISIONS.md' || normalized === '.kavion/DECISIONS-archive.md') return 'decisions';
+  if (normalized === '.kavion/CURRENT.md') return 'current';
+  if (normalized === '.kavion/session.json' || normalized === '.kavion/history.jsonl') return 'session';
+  if (normalized.startsWith('.kavion/plans/')) return 'plan';
+  if (normalized.startsWith('.kavion/reports/')) return 'report';
+  if (normalized.startsWith('.kavion/notes/')) return 'note';
+  if (normalized.startsWith('.gemini/context/')) return 'legacy-context';
+  if (normalized.startsWith('.gemini/archive/')) return 'legacy-archive';
   if (relative.includes('/sessions/')) return 'legacy-session';
   return 'memory';
 }
 
 function shouldIndex(filePath) {
   const relative = rootRel(filePath);
-  if (relative.startsWith('kavion/index/')) return false;
-  if (relative.startsWith('kavion/node_modules/')) return false;
+  const normalized = relative.replace(/^\.gemini\/kavion\//, '.kavion/');
+  if (normalized.startsWith('.kavion/index/')) return false;
+  if (normalized.startsWith('.kavion/node_modules/')) return false;
   if (path.basename(filePath).startsWith('.env')) return false;
   return filePath.endsWith('.md') || filePath.endsWith('.json') || filePath.endsWith('.jsonl');
 }
@@ -411,6 +414,7 @@ async function collectMemoryFiles() {
   ];
 
   // Backward compatibility during migration.
+  if (await exists(legacyGeminiKavionRoot)) files.push(...(await walk(legacyGeminiKavionRoot)));
   if (await exists(legacyContextRoot)) files.push(...(await walk(legacyContextRoot)));
   if (await exists(legacyArchiveRoot)) files.push(...(await walk(legacyArchiveRoot)));
   if (await exists(legacySessionsRoot)) files.push(...(await walk(legacySessionsRoot)));
@@ -702,6 +706,23 @@ async function parseLegacySessions(dirPath) {
   return sessions;
 }
 
+async function copyDirectoryContents(sourceDir, targetDir) {
+  const entries = await fs.readdir(sourceDir, { withFileTypes: true }).catch(() => []);
+  await fs.mkdir(targetDir, { recursive: true });
+  for (const entry of entries) {
+    const sourcePath = path.join(sourceDir, entry.name);
+    const targetPath = path.join(targetDir, entry.name);
+    if (entry.isDirectory()) {
+      await copyDirectoryContents(sourcePath, targetPath);
+      continue;
+    }
+    if (entry.isFile()) {
+      await fs.mkdir(path.dirname(targetPath), { recursive: true });
+      await fs.copyFile(sourcePath, targetPath);
+    }
+  }
+}
+
 function mergeLegacySections(sections) {
   const seen = new Set();
   const output = [];
@@ -727,6 +748,7 @@ async function migrate({ apply = false } = {}) {
   await ensureInitialFiles();
 
   const actions = [];
+  const hasGeminiKavionLayout = await exists(legacyGeminiKavionRoot);
   const legacyProjectBrief = await readText(path.join(legacyContextRoot, 'project-brief.md'));
   const legacyArchitecture = await readText(path.join(legacyContextRoot, 'architecture.md'));
   const legacyCommands = await readText(path.join(legacyContextRoot, 'commands.md'));
@@ -751,6 +773,10 @@ async function migrate({ apply = false } = {}) {
   const sortedActive = [...activeLegacy].sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)));
   const activeSession = sortedActive[0] || null;
 
+  if (hasGeminiKavionLayout) {
+    actions.push({ action: 'adopt_current_layout', from: '.gemini/kavion/', to: rel(kavionRoot) });
+  }
+
   actions.push(
     { action: 'merge_project', from: '.gemini/context/*', to: rel(projectFile) },
     { action: 'convert_current', from: '.gemini/context/current-work.md', to: rel(currentFile) },
@@ -765,6 +791,19 @@ async function migrate({ apply = false } = {}) {
       mode: 'dry-run',
       actions,
       active_session: activeSession,
+    };
+  }
+
+  if (hasGeminiKavionLayout) {
+    await copyDirectoryContents(legacyGeminiKavionRoot, kavionRoot);
+    await removeIfExists(legacyGeminiKavionRoot);
+    await buildIndex();
+
+    return {
+      ok: true,
+      mode: 'applied',
+      actions,
+      migrated_from: '.gemini/kavion',
     };
   }
 
@@ -1046,7 +1085,7 @@ async function gateTest(session, config, { write_report = false, use_cache = tru
       status: 'risk',
       result: 'risk',
       evidence: 'No test command configured in gates.yaml.',
-      next_step: 'Set test.command in .gemini/kavion/gates.yaml.',
+      next_step: 'Set test.command in .kavion/gates.yaml.',
     };
     if (write_report) result.report_file = await writeGateReport(slug, 'test', result);
     return result;
@@ -1149,7 +1188,7 @@ async function gateSecurity(session, config, { write_report = false } = {}) {
       status: 'risk',
       result: 'risk',
       evidence: 'Security gate triggered, but no security command is configured.',
-      next_step: 'Set security.command in .gemini/kavion/gates.yaml.',
+      next_step: 'Set security.command in .kavion/gates.yaml.',
     };
     if (write_report) result.report_file = await writeGateReport(slug, 'security', result);
     return result;
@@ -1447,7 +1486,7 @@ server.registerTool(
 server.registerTool(
   'kavion_write_plan',
   {
-    description: 'Write or replace a structured plan file under .gemini/kavion/plans/.',
+    description: 'Write or replace a structured plan file under .kavion/plans/.',
     inputSchema: z
       .object({
         slug: z.string().optional(),
@@ -1466,7 +1505,7 @@ server.registerTool(
 server.registerTool(
   'kavion_write_report',
   {
-    description: 'Write or replace a structured report file under .gemini/kavion/reports/.',
+    description: 'Write or replace a structured report file under .kavion/reports/.',
     inputSchema: z
       .object({
         slug: z.string().optional(),
@@ -1552,7 +1591,7 @@ server.registerTool(
 server.registerTool(
   'kavion_write_note',
   {
-    description: 'Write a structured research/debug note under .gemini/kavion/notes with TTL enforcement.',
+    description: 'Write a structured research/debug note under .kavion/notes with TTL enforcement.',
     inputSchema: z
       .object({
         slug: z.string().optional(),

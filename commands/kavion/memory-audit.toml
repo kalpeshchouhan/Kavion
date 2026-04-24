@@ -4,11 +4,11 @@ prompt = """
 Audit Kavion project memory.
 
 Check:
-- `.gemini/kavion/CURRENT.md` is current and concise
-- `.gemini/kavion/PROJECT.md` stays within repo-level memory
-- `.gemini/kavion/DECISIONS.md` contains only real decisions
-- `.gemini/kavion/session.json` is current
-- `.gemini/kavion/index/` exists and is not stale
+- `.kavion/CURRENT.md` is current and concise
+- `.kavion/PROJECT.md` stays within repo-level memory
+- `.kavion/DECISIONS.md` contains only real decisions
+- `.kavion/session.json` is current
+- `.kavion/index/` exists and is not stale
 - expired notes or oversized files are reported
 
 Use MCP tool `kavion_status` or `kavion_memory_gc` when available.
